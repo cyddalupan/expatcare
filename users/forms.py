@@ -4,7 +4,7 @@ from django.contrib.auth.forms import UserCreationForm, UserChangeForm, Authenti
 from .models import User
 
 class CustomUserCreationForm(UserCreationForm):
-    class Meta(UserCreationForm):
+    class Meta(UserCreationForm.Meta):
         model = User
         fields = ('email', 'type', 'agency')
 

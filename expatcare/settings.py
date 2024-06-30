@@ -48,6 +48,9 @@ INSTALLED_APPS = [
     'playground',
     'assistant',
     'agency',
+    'officer',
+    'applicant',
+    'status',
 ]
 
 MIDDLEWARE = [

@@ -26,13 +26,12 @@ SECRET_KEY = 'django-insecure-=m^)n&zcexskvxb3thsip&d_6g9xl7b-&e-!=m+x-fv5!kn)n8
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["*"]
+ALLOWED_HOSTS = ["*", "https://api.welfareph.com"]
 
 
 # Application definition
 
 INSTALLED_APPS = [
-    'users',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -41,15 +40,13 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'rest_framework.authtoken',
+    'corsheaders',
     'dj_rest_auth',
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
     'playground',
     'assistant',
-    'agency',
-    'officer',
-    'applicant',
     'status',
     'employee',
 ]
@@ -63,6 +60,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'allauth.account.middleware.AccountMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
 ]
 
 ROOT_URLCONF = 'expatcare.urls'
@@ -159,9 +157,9 @@ ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_USERNAME_REQUIRED = False
 ACCOUNT_USER_MODEL_USERNAME_FIELD = None
 
-REST_AUTH_REGISTER_SERIALIZERS = {
-    'REGISTER_SERIALIZER': 'users.serializers.CustomRegisterSerializer',
-}
+# REST_AUTH_REGISTER_SERIALIZERS = {
+#     'REGISTER_SERIALIZER': 'users.serializers.CustomRegisterSerializer',
+# }
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
@@ -179,8 +177,10 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'  # During devel
 
 
 # Other Config
-#CSRF_TRUSTED_ORIGINS=['https://api.directapplication.app']
+CSRF_TRUSTED_ORIGINS=['https://api.welfareph.com']
 CORS_ORIGIN_ALLOW_ALL = True
+CORS_ALLOW_CREDENTIALS = True
+
 #SESSION_COOKIE_SECURE = True
 #CSRF_COOKIE_SECURE = True
 #SESSION_COOKIE_HTTPONLY = True
@@ -197,4 +197,4 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 # EMAIL_HOST_USER = env('EMAIL_HOST_USER')
 # EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD')
 
-AUTH_USER_MODEL = 'users.User'
+# AUTH_USER_MODEL = 'users.User'

@@ -19,7 +19,6 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib.auth import views as auth_views
-from users.forms import CustomAuthenticationForm
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -28,7 +27,6 @@ urlpatterns = [
     path('dj-rest-auth/registration/', include('dj_rest_auth.registration.urls')),
     path('playground/', include('playground.urls')),
     path('assistant/', include('assistant.urls')),
-    path('accounts/login/', auth_views.LoginView.as_view(authentication_form=CustomAuthenticationForm), name='login'),
     path('accounts/', include('django.contrib.auth.urls')),
     path('employee/', include('employee.urls')),
 ]

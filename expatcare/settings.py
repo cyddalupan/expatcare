@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     'officer',
     'applicant',
     'status',
+    'employee',
 ]
 
 MIDDLEWARE = [

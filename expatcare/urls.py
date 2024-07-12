@@ -30,6 +30,7 @@ urlpatterns = [
     path('assistant/', include('assistant.urls')),
     path('accounts/login/', auth_views.LoginView.as_view(authentication_form=CustomAuthenticationForm), name='login'),
     path('accounts/', include('django.contrib.auth.urls')),
+    path('employee/', include('employee.urls')),
 ]
 
 if settings.DEBUG:

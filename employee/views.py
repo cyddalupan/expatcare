@@ -61,16 +61,21 @@ class Chat(APIView):
                 tools=tools,
             )
             response_content = completion.choices[0].message.content
+            print("completion:")
+            print(completion)
+            print("Response contrnt:")
+            print(response_content)
 
-            tool_calls = response_message.tool_calls
-            print("All good")
+            tool_calls = completion.choices[0].message.tool_calls
+            print("tool_calls:")
+            print(tool_calls)
 
             if tool_calls:
                 print("Inside tool_calls")
-                function_name = tool_calls['name']
+                function_name = tool_calls[0].function.name 
                 print("function name:")
                 print(function_name)
-                arguments = tool_calls['arguments']
+                arguments = tool_calls[0].function.arguments 
                 print(arguments)
 
                 if function_name == "get_current_weather":

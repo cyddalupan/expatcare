@@ -2,8 +2,11 @@ from django.http import HttpResponse
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status
+import json
 from dotenv import load_dotenv
 from openai import OpenAI
+
+from employee.models import Employee
 
 # Load environment variables
 load_dotenv()
@@ -12,39 +15,40 @@ load_dotenv()
 client = OpenAI()
 
 class Chat(APIView):
-    def get_current_weather(location, unit="fahrenheit"):
-        """Get the current weather in a given location"""
-        if "tokyo" in location.lower():
-            return json.dumps({"location": "Tokyo", "temperature": "10", "unit": unit})
-        elif "san francisco" in location.lower():
-            return json.dumps({"location": "San Francisco", "temperature": "72", "unit": unit})
-        elif "paris" in location.lower():
-            return json.dumps({"location": "Paris", "temperature": "22", "unit": unit})
-        else:
-            return json.dumps({"location": location, "temperature": "unknown"})
-
+    def get_user(self, passport_number, lastname):
+        try:
+            # Attempt to find the employee by passport number and last name
+            employee = Employee.objects.get(passport_number=passport_number, last_name=lastname)
+            # If found, return the employee ID
+            return f"\nuser_id:{employee.id}:{employee.first_name} {employee.last_name}"
+        except Employee.DoesNotExist:
+            # If no such employee exists, return an error message
+            return "We can't find you in our list of employees."
     def post(self, request):
         usermessage = request.data.get('message', None)
 
         messages = [
-            {"role": "system", "content": "You are a friend that gives good advice. Concern if I have problem. Limit reply to 200 characters."},
+            {"role": "system", "content": "Your goal is to get the passport number and last name of the user to confirm the identity so you can help. You are comforting to talk to."},
         ]
         tools = [
             {
                 "type": "function",
                 "function": {
-                    "name": "get_current_weather",
-                    "description": "Get the current weather in a given location",
+                    "name": "get_passport",
+                    "description": "Get the passport number and last name of the user",
                     "parameters": {
                         "type": "object",
                         "properties": {
-                            "location": {
+                            "passport_number": {
                                 "type": "string",
-                                "description": "The city and state, e.g. San Francisco, CA",
+                                "description": "passport number, e.g. 'P1234567A' or 'EC1234567.'",
                             },
-                            "unit": {"type": "string", "enum": ["celsius", "fahrenheit"]},
+                            "last_name": {
+                                "type": "string",
+                                "description": "the last name,e.g. 'Santos' or 'Dela Cruz.'",
+                            },
                         },
-                        "required": ["location"],
+                        "required": ["passport_number", "last_name"],
                     },
                 },
             }
@@ -76,18 +80,20 @@ class Chat(APIView):
                 print("function name:")
                 print(function_name)
                 arguments = tool_calls[0].function.arguments 
+                arguments_dict = json.loads(arguments)
                 print(arguments)
 
-                if function_name == "get_current_weather":
-                    print("function name is get weather")
-                    location = arguments.get('location')
-                    print("location:")
-                    print(location)
-                    unit = arguments.get('unit', 'celsius')
-                    print(unit)
-                    weather_info = get_current_weather(location, unit)
-                    print(weather_info)
-                    response_content += f"\nWeather Info: {weather_info}"
+                if function_name == "get_passport":
+                    print("function name is get_passport")
+                    passport_number = arguments_dict['passport_number']
+                    last_name = arguments_dict['last_name']
+                    print("passport and lastname:")
+                    print(passport_number)
+                    print(last_name)
+                    user_reponse = self.get_user(passport_number, last_name)
+                    print("user_reponse:")
+                    print(user_reponse)
+                    response_content = user_reponse
 
             return Response({'response': response_content}, status=status.HTTP_200_OK)
         except Exception as e:

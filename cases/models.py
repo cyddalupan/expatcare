@@ -8,4 +8,4 @@ class Case(models.Model):
     date_reported = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"{self.get_category_display()} - {self.employee.first_name} {self.employee.last_name}"
+        return f"{self.category} - {self.employee.first_name} {self.employee.last_name}"

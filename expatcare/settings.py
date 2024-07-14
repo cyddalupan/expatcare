@@ -32,6 +32,8 @@ ALLOWED_HOSTS = ["*", "https://api.welfareph.com"]
 # Application definition
 
 INSTALLED_APPS = [
+    'colorfield',
+    'admin_interface',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -202,3 +204,6 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 # EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD')
 
 # AUTH_USER_MODEL = 'users.User'
+
+X_FRAME_OPTIONS = "SAMEORIGIN"
+SILENCED_SYSTEM_CHECKS = ["security.W019"]

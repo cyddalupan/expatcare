@@ -163,5 +163,6 @@ cython_debug/
 static/videos/job_videos/
 static/customer_attachments/
 media/
+staticfiles/
 db.sqlite3
 .DS_Store

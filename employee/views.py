@@ -17,13 +17,17 @@ client = OpenAI()
 class Chat(APIView):
     def get_user(self, passport_number, lastname):
         try:
-            # Attempt to find the employee by passport number and last name
-            employee = Employee.objects.get(passport_number=passport_number, last_name=lastname)
+            # Attempt to find the employee by passport number and last name (case-insensitive)
+            employee = Employee.objects.get(
+                passport_number__iexact=passport_number.lower(),
+                last_name__iexact=lastname.lower()
+            )
             # If found, return the employee ID
-            return f"\nuser_id:{employee.id}:{employee.first_name} {employee.last_name}"
+            return f"user_id:{employee.id}:{employee.first_name} {employee.last_name}"
         except Employee.DoesNotExist:
             # If no such employee exists, return an error message
             return "We can't find you in our list of employees."
+
     def post(self, request):
         usermessage = request.data.get('message', None)
 
@@ -65,34 +69,17 @@ class Chat(APIView):
                 tools=tools,
             )
             response_content = completion.choices[0].message.content
-            print("completion:")
-            print(completion)
-            print("Response contrnt:")
-            print(response_content)
-
             tool_calls = completion.choices[0].message.tool_calls
-            print("tool_calls:")
-            print(tool_calls)
-
+            
             if tool_calls:
-                print("Inside tool_calls")
                 function_name = tool_calls[0].function.name 
-                print("function name:")
-                print(function_name)
                 arguments = tool_calls[0].function.arguments 
                 arguments_dict = json.loads(arguments)
-                print(arguments)
-
+                
                 if function_name == "get_passport":
-                    print("function name is get_passport")
                     passport_number = arguments_dict['passport_number']
                     last_name = arguments_dict['last_name']
-                    print("passport and lastname:")
-                    print(passport_number)
-                    print(last_name)
                     user_reponse = self.get_user(passport_number, last_name)
-                    print("user_reponse:")
-                    print(user_reponse)
                     response_content = user_reponse
 
             return Response({'response': response_content}, status=status.HTTP_200_OK)

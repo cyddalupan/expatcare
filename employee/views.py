@@ -1,4 +1,3 @@
-from django.http import HttpResponse
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status
@@ -26,13 +25,13 @@ class Chat(APIView):
             return f"user_id:{employee.id}:{employee.first_name} {employee.last_name}"
         except Employee.DoesNotExist:
             # If no such employee exists, return an error message
-            return "We can't find you in our list of employees."
+            return "Hindi kita makita sa listahan namin, Paki double check kung tama ang binigay mong information."
 
     def post(self, request):
         usermessage = request.data.get('message', None)
 
         messages = [
-            {"role": "system", "content": "Your goal is to get the passport number and last name of the user to confirm the identity so you can help. You are comforting to talk to."},
+            {"role": "system", "content": "Your goal is to get the passport number and last name of the user to confirm the identity so you can help. You are comforting to talk to. Speak in tagalog if user is using tagalog. Keep reply short if posible"},
         ]
         tools = [
             {

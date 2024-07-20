@@ -25,8 +25,6 @@ urlpatterns = [
     path('api-auth/', include('rest_framework.urls')),  # Optional for DRF's browsable API
     path('dj-rest-auth/', include('dj_rest_auth.urls')),
     path('dj-rest-auth/registration/', include('dj_rest_auth.registration.urls')),
-    path('playground/', include('playground.urls')),
-    path('assistant/', include('assistant.urls')),
     path('accounts/', include('django.contrib.auth.urls')),
     path('employee/', include('employee.urls')),
     path('cases/', include('cases.urls')),

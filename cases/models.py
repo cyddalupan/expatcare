@@ -2,10 +2,29 @@ from django.db import models
 from employee.models import Employee  # Import the Employee model
 
 class Case(models.Model):
+    OPEN = 'open'
+    INVESTIGATION = 'investigation'
+    CLOSED = 'closed'
+    PENDING = 'pending'
+    REOPENED = 'reopened'
+
+    STATUS_CHOICES = [
+        (OPEN, 'Open'),
+        (INVESTIGATION, 'Investigation'),
+        (CLOSED, 'Closed'),
+        (PENDING, 'Pending'),
+        (REOPENED, 'Reopened'),
+    ]
+
     employee = models.ForeignKey(Employee, on_delete=models.CASCADE, related_name='cases')
     category = models.CharField(max_length=50)
     summary = models.TextField()
     date_reported = models.DateTimeField(auto_now_add=True)
+    report_status = models.CharField(
+        max_length=15,
+        choices=STATUS_CHOICES,
+        default=OPEN,
+    )
 
     def __str__(self):
-        return f"{self.category} - {self.employee.first_name} {self.employee.last_name}"
+        return f"{self.category} - {self.employee.first_name} {self.employee.last_name} ({self.get_report_status_display()})"

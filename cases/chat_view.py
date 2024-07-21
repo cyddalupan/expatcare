@@ -5,65 +5,40 @@ import json
 from dotenv import load_dotenv
 from openai import OpenAI
 
-from .models import Case
-from employee.models import Employee
-
-# Load environment variables
 load_dotenv()
 
-# Initialize OpenAI client
 client = OpenAI()
 
 class Chat(APIView):
-    def log_case(self, employee_id, category, summary):
-        try:
-            # Retrieve the Employee instance
-            employee = Employee.objects.get(id=employee_id)
-
-            # Create and save the Case instance
-            case = Case.objects.create(
-                employee=employee,
-                category=category,
-                summary=summary
-            )
-
-            # Return the specified string message
-            return "Kakausapin ko ang iyong employer at aayusin ang iyong problema"
-        
-        except Employee.DoesNotExist:
-            # Handle the case where the Employee does not exist
-            return "Employee not found"
-
-        except Exception as e:
-            # Handle any other exceptions
-            return str(e)
+    def get_category(self, category):
+        if category == "rape":
+            return "systeminfo:" + category + ":Tutulungan ka namin, maari mo ba sabihin kung kailan ito nangyari?"
+        else:
+            return "systeminfo:" + category + ":Maari mo pa ba ko bigyan ng mga detalye"
 
     def post(self, request):
         employee_id = request.data.get('employee_id', None)
         usermessage = request.data.get('message', None)
 
         messages = [
-            {"role": "system", "content": "You make sure The user is Ok, If not make sure know the Problem and get as much information as you need. make sure all important information is included. You are comforting to talk to.  make sure the user does not have any more important information to share. Speak in tagalog if user is speaking tagalog. try to keep reply short"},
+            {"role": "system", "content": "Your are comforting to talk to. make sure the user is ok, if not find out what is the category of the problem. use tagalog if posible"},
         ]
         tools = [
             {
                 "type": "function",
                 "function": {
-                    "name": "log_case",
-                    "description": "Get the problem of user, dont trigger until we sure that we get all the important details about the problem, get the category and the summmary.",
+                    "name": "get_category",
+                    "description": "Get the Category of the problem",
                     "parameters": {
                         "type": "object",
                         "properties": {
                             "category": {
                                 "type": "string",
-                                "description": "problem category, e.g. 'abuse','rape','torture' etc",
-                            },
-                            "summary": {
-                                "type": "string",
-                                "description": "The summary of the problem. compile and make it look like a report",
+                                "enum": ["abuse", "rape", "torture", "other"],
+                                "description": "problem category",
                             },
                         },
-                        "required": ["category", "summary"],
+                        "required": ["category"],
                     },
                 },
             }
@@ -75,23 +50,22 @@ class Chat(APIView):
 
         try:
             completion = client.chat.completions.create(
-                model="gpt-3.5-turbo",
+                model="gpt-4o-mini",
                 messages=messages,
                 tools=tools,
             )
             response_content = completion.choices[0].message.content
             tool_calls = completion.choices[0].message.tool_calls
-            
+
             if tool_calls:
                 function_name = tool_calls[0].function.name 
                 arguments = tool_calls[0].function.arguments 
                 arguments_dict = json.loads(arguments)
                 
-                if function_name == "log_case":
+                if function_name == "get_category":
                     category = arguments_dict['category']
-                    summary = arguments_dict['summary']
-                    user_reponse = self.log_case(employee_id, category, summary)
-                    response_content = user_reponse
+                    user_response = self.get_category(category)
+                    response_content = user_response
 
             return Response({'response': response_content}, status=status.HTTP_200_OK)
         except Exception as e:

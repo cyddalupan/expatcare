@@ -28,7 +28,7 @@ class Other(APIView):
             )
 
             # Return the specified string message
-            return "Kakausapin ko ang iyong employer at aayusin ang iyong problema"
+            return "systeminfo:report:Kakausapin ko ang iyong employer at aayusin ang iyong problema"
         
         except Employee.DoesNotExist:
             # Handle the case where the Employee does not exist
@@ -39,18 +39,20 @@ class Other(APIView):
             return str(e)
 
     def post(self, request):
-        employee_id = request.data.get('employee_id', None)
-        usermessage = request.data.get('message', None)
+        employee_id = request.data.get('employee_id')
+        user_message = request.data.get('message')
 
+        # Initial messages for the OpenAI chat
         messages = [
             {"role": "system", "content": "You make sure The user is Ok, If not make sure know the Problem and get as much information as you need. make sure all important information is included. You are comforting to talk to.  make sure the user does not have any more important information to share. Speak in tagalog if user is speaking tagalog. try to keep reply short"},
         ]
+        
         tools = [
             {
                 "type": "function",
                 "function": {
                     "name": "log_case",
-                    "description": "Get the problem of user, dont trigger until we sure that we get all the important details about the problem, get the category and the summmary.",
+                    "description": "Get the problem of user, dont trigger until we sure that we get all the important details about the problem, get the category and the summary.",
                     "parameters": {
                         "type": "object",
                         "properties": {
@@ -69,13 +71,14 @@ class Other(APIView):
             }
         ]
 
-        for obj in usermessage:
-            sender = "user" if obj['sender'] != "AI" else "system"
-            messages.append({"role": sender, "content": obj['text']})
+        if user_message:
+            for obj in user_message:
+                sender = "user" if obj['sender'] != "AI" else "system"
+                messages.append({"role": sender, "content": obj['text']})
 
         try:
             completion = client.chat.completions.create(
-                model="gpt-3.5-turbo",
+                model="gpt-4o-mini",
                 messages=messages,
                 tools=tools,
             )
@@ -90,8 +93,8 @@ class Other(APIView):
                 if function_name == "log_case":
                     category = arguments_dict['category']
                     summary = arguments_dict['summary']
-                    user_reponse = self.log_case(employee_id, category, summary)
-                    response_content = user_reponse
+                    user_response = self.log_case(employee_id, category, summary)
+                    response_content = user_response
 
             return Response({'response': response_content}, status=status.HTTP_200_OK)
         except Exception as e:

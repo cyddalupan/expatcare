@@ -4,7 +4,6 @@ from rest_framework import status
 import json
 from dotenv import load_dotenv
 from openai import OpenAI
-
 from .models import Case
 from employee.models import Employee
 
@@ -15,21 +14,28 @@ load_dotenv()
 client = OpenAI()
 
 class Report(APIView):
-    def log_case(self, employee_id, category, summary):
+    def get_report(self, employee_id, user_want):
+        if user_want == "file_new_report":
+            return "systeminfo:chat:Meron ka pang gusto ibahagi, ano pa ang nangyari sayo?"
+
         try:
             # Retrieve the Employee instance
             employee = Employee.objects.get(id=employee_id)
 
-            # Create and save the Case instance
-            case = Case.objects.create(
-                employee=employee,
-                category=category,
-                summary=summary
-            )
+            # Retrieve all cases related to the employee
+            cases = Case.objects.filter(employee=employee)
 
-            # Return the specified string message
-            return "Kakausapin ko ang iyong employer at aayusin ang iyong problema"
-        
+            # Check if any cases are found
+            if not cases.exists():
+                return "Wala ka pang nagagawang reklamo, gusto mo ba mag reklamo?."
+
+            # Format the message
+            message = f"Eto ang lagay ng iyong report {employee.first_name} {employee.last_name}:<br/>"
+            for case in cases:
+                message += f"- {case.category}: {case.get_report_status_display()}<br/>"
+
+            return message
+
         except Employee.DoesNotExist:
             # Handle the case where the Employee does not exist
             return "Employee not found"
@@ -40,62 +46,58 @@ class Report(APIView):
 
     def post(self, request):
         employee_id = request.data.get('employee_id', None)
-        usermessage = request.data.get('message', None)
+        user_message = request.data.get('message', None)
 
+        if not employee_id or not user_message:
+            return Response({'error': 'Employee ID and message are required.'}, status=status.HTTP_400_BAD_REQUEST)
 
-        return Response({'response': usermessage}, status=status.HTTP_200_OK)
+        messages = [
+            {"role": "system", "content": "You are comforting to talk to. You are talking to a victim. Use Tagalog if possible"},
+        ]
+        tools = [
+            {
+                "type": "function",
+                "function": {
+                    "name": "get_report",
+                    "description": "confirm if the user wants to check the report status or wants to create a complaint",
+                    "parameters": {
+                        "type": "object",
+                        "properties": {
+                            "user_want": {
+                                "type": "string",
+                                "enum": ["get_report", "file_new_report"],
+                                "description": "get if user wants to check report status or create a new complaint",
+                            },
+                        },
+                        "required": ["user_want"],
+                    },
+                },
+            }
+        ]
 
-        # messages = [
-        #     {"role": "system", "content": "You make sure The user is Ok, If not make sure know the Problem and get as much information as you need. make sure all important information is included. You are comforting to talk to.  make sure the user does not have any more important information to share. Speak in tagalog if user is speaking tagalog. try to keep reply short"},
-        # ]
-        # tools = [
-        #     {
-        #         "type": "function",
-        #         "function": {
-        #             "name": "log_case",
-        #             "description": "Get the problem of user, dont trigger until we sure that we get all the important details about the problem, get the category and the summmary.",
-        #             "parameters": {
-        #                 "type": "object",
-        #                 "properties": {
-        #                     "category": {
-        #                         "type": "string",
-        #                         "description": "problem category, e.g. 'abuse','rape','torture' etc",
-        #                     },
-        #                     "summary": {
-        #                         "type": "string",
-        #                         "description": "The summary of the problem. compile and make it look like a report",
-        #                     },
-        #                 },
-        #                 "required": ["category", "summary"],
-        #             },
-        #         },
-        #     }
-        # ]
+        for obj in user_message:
+            sender = "user" if obj['sender'] != "AI" else "system"
+            messages.append({"role": sender, "content": obj['text']})
 
-        # for obj in usermessage:
-        #     sender = "user" if obj['sender'] != "AI" else "system"
-        #     messages.append({"role": sender, "content": obj['text']})
+        try:
+            completion = client.chat.completions.create(
+                model="gpt-4o-mini",
+                messages=messages,
+                tools=tools,
+            )
+            response_content = completion.choices[0].message.content
+            tool_calls = completion.choices[0].message.tool_calls
 
-        # try:
-        #     completion = client.chat.completions.create(
-        #         model="gpt-3.5-turbo",
-        #         messages=messages,
-        #         tools=tools,
-        #     )
-        #     response_content = completion.choices[0].message.content
-        #     tool_calls = completion.choices[0].message.tool_calls
-            
-        #     if tool_calls:
-        #         function_name = tool_calls[0].function.name 
-        #         arguments = tool_calls[0].function.arguments 
-        #         arguments_dict = json.loads(arguments)
-                
-        #         if function_name == "log_case":
-        #             category = arguments_dict['category']
-        #             summary = arguments_dict['summary']
-        #             user_reponse = self.log_case(employee_id, category, summary)
-        #             response_content = user_reponse
+            if tool_calls:
+                function_name = tool_calls[0].function.name 
+                arguments = tool_calls[0].function.arguments 
+                arguments_dict = json.loads(arguments)
 
-        #     return Response({'response': response_content}, status=status.HTTP_200_OK)
-        # except Exception as e:
-        #     return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                if function_name == "get_report":
+                    user_want = arguments_dict['user_want']
+                    user_response = self.get_report(employee_id, user_want)
+                    response_content = user_response
+
+            return Response({'response': response_content}, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

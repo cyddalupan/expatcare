@@ -11,4 +11,7 @@ urlpatterns = [
     path('other/', Other.as_view(), name='other'),
     path('chat/', Chat.as_view(), name='chat'),
     path('report/', Report.as_view(), name='report'),
+    path('abuse/', Other.as_view(), name='abuse'),
+    path('rape/', Other.as_view(), name='rape'),
+    path('torture/', Other.as_view(), name='torture'),
 ]

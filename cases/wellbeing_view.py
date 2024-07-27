@@ -1,9 +1,12 @@
+from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status
 import json
 from dotenv import load_dotenv
 from openai import OpenAI
+
+from advance.models import AICategory
 
 from .models import Case
 from employee.models import Employee
@@ -37,15 +40,72 @@ class Wellbeing(APIView):
         except Exception as e:
             # Handle any other exceptions
             return str(e)
+        
+    def get_properties(self, category):
+        properties = {
+            "summary": {
+                "type": "string",
+                "description": "The summary of the problem. compile and make it look like a report",
+            },
+        }
+        
+        if category.param_one_name and category.param_one_name.strip():
+            properties[category.param_one_name] = {
+                "type": "string",
+                "description": category.param_one_desc,
+            }
+            if category.param_one_enum and category.param_one_enum.strip():
+                properties[category.param_one_name]["enum"] = category.param_one_enum.split(',')
+        
+        if category.param_two_name and category.param_two_name.strip():
+            properties[category.param_two_name] = {
+                "type": "string",
+                "description": category.param_two_desc,
+            }
+            if category.param_two_enum and category.param_two_enum.strip():
+                properties[category.param_two_name]["enum"] = category.param_two_enum.split(',')
+        
+        if category.param_three_name and category.param_three_name.strip():
+            properties[category.param_three_name] = {
+                "type": "string",
+                "description": category.param_three_desc,
+            }
+            if category.param_three_enum and category.param_three_enum.strip():
+                properties[category.param_three_name]["enum"] = category.param_three_enum.split(',')
+        
+        if category.param_four_name and category.param_four_name.strip():
+            properties[category.param_four_name] = {
+                "type": "string",
+                "description": category.param_four_desc,
+            }
+            if category.param_four_enum and category.param_four_enum.strip():
+                properties[category.param_four_name]["enum"] = category.param_four_enum.split(',')
+        print("properties")
+        print(properties )
+        return properties
+
+    def get_param_names(self, category):
+        param_names = ["summary"]
+        if category.param_one_name and category.param_one_name.strip():
+            param_names.append(category.param_one_name)
+        if category.param_two_name and category.param_two_name.strip():
+            param_names.append(category.param_two_name)
+        if category.param_three_name and category.param_three_name.strip():
+            param_names.append(category.param_three_name)
+        if category.param_four_name and category.param_four_name.strip():
+            param_names.append(category.param_four_name)
+        return param_names
 
     def post(self, request):
         employee_id = request.data.get('employee_id')
         category = request.data.get('category')
         user_message = request.data.get('message')
 
+        category = get_object_or_404(AICategory, category_name=category)
+
         # Initial messages for the OpenAI chat
         messages = [
-            {"role": "system", "content": "You make sure The user is Ok, If not make sure know the Problem and get as much information as you need. make sure all important information is included. You are comforting to talk to.  make sure the user does not have any more important information to share. Speak in tagalog if user is speaking tagalog. try to keep reply short"},
+            {"role": "system", "content": category.role},
         ]
         
         tools = [
@@ -53,20 +113,11 @@ class Wellbeing(APIView):
                 "type": "function",
                 "function": {
                     "name": "log_case",
-                    "description": "Get the problem of user, dont trigger until we sure that we get all the important details about the problem, get the category and the summary.",
+                    "description": category.function_description,
                     "parameters": {
                         "type": "object",
-                        "properties": {
-                            "category": {
-                                "type": "string",
-                                "description": "problem category, e.g. 'abuse','rape','torture' etc",
-                            },
-                            "summary": {
-                                "type": "string",
-                                "description": "The summary of the problem. compile and make it look like a report",
-                            },
-                        },
-                        "required": ["category", "summary"],
+                        "properties": self.get_properties(category),
+                        "required": self.get_param_names(category),
                     },
                 },
             }

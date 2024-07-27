@@ -1,3 +1,6 @@
 from django.test import TestCase
 
-# Create your tests here.
+class BasicSyntaxTest(TestCase):
+    def test_basic_setup(self):
+        # A simple test to ensure the test framework is working
+        self.assertTrue(True)

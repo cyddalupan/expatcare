@@ -14,7 +14,7 @@ load_dotenv()
 # Initialize OpenAI client
 client = OpenAI()
 
-class Other(APIView):
+class Wellbeing(APIView):
     def log_case(self, employee_id, category, summary):
         try:
             # Retrieve the Employee instance
@@ -40,6 +40,7 @@ class Other(APIView):
 
     def post(self, request):
         employee_id = request.data.get('employee_id')
+        category = request.data.get('category')
         user_message = request.data.get('message')
 
         # Initial messages for the OpenAI chat

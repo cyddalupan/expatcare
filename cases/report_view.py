@@ -18,6 +18,9 @@ class Report(APIView):
         if user_want == "file_new_report":
             return "systeminfo:chat:Meron ka pang gusto ibahagi, ano pa ang nangyari sayo?"
 
+        if user_want == "just_want_to_talk":
+            return "systeminfo:chat:Kamusta ka naman?"
+        
         try:
             # Retrieve the Employee instance
             employee = Employee.objects.get(id=employee_id)
@@ -27,7 +30,7 @@ class Report(APIView):
 
             # Check if any cases are found
             if not cases.exists():
-                return "Wala ka pang nagagawang reklamo, gusto mo ba mag reklamo?."
+                return "systeminfo:chat:Wala ka pang nagagawang reklamo, gusto mo ba mag reklamo?."
 
             # Format the message
             message = f"Eto ang lagay ng iyong report {employee.first_name} {employee.last_name}:<br/>"
@@ -52,7 +55,7 @@ class Report(APIView):
             return Response({'error': 'Employee ID and message are required.'}, status=status.HTTP_400_BAD_REQUEST)
 
         messages = [
-            {"role": "system", "content": "You are comforting to talk to. You are talking to a victim. Use Tagalog if possible"},
+            {"role": "system", "content": "Comfortable to talk to. Use Tagalog if the user does. Ask if they want updates on their previous case/report."},
         ]
         tools = [
             {
@@ -65,8 +68,8 @@ class Report(APIView):
                         "properties": {
                             "user_want": {
                                 "type": "string",
-                                "enum": ["get_report", "file_new_report"],
-                                "description": "get if user wants to check report status or create a new complaint",
+                                "enum": ["get_report", "file_new_report", "just_want_to_talk"],
+                                "description": "get if user wants to check report status, create a new complaint, or just want to talk",
                             },
                         },
                         "required": ["user_want"],

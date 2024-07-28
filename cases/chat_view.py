@@ -5,23 +5,28 @@ import json
 from dotenv import load_dotenv
 from openai import OpenAI
 
+from advance.models import AICategory
+
 load_dotenv()
 
 client = OpenAI()
 
 class Chat(APIView):
     def get_category(self, category):
-        if category == "rape":
-            return "systeminfo:" + category + ":Tutulungan ka namin, maari mo ba sabihin kung kailan ito nangyari?"
-        else:
-            return "systeminfo:" + category + ":Maari mo pa ba ko bigyan ng mga detalye"
+        return "systeminfo:" + category + ":Maari mo pa ba ko bigyan ng mga detalye"
+    
+    def want_report(self):
+        return "systeminfo:report:Tama ba na gusto mo tignan ang status ng nakaraan mong reklamo?"
 
     def post(self, request):
         employee_id = request.data.get('employee_id', None)
         usermessage = request.data.get('message', None)
+        
+        category_names = AICategory.objects.values_list('category_name', flat=True)
+        category_names_list = list(category_names)
 
         messages = [
-            {"role": "system", "content": "Your are comforting to talk to. make sure the user is ok, if not find out what is the category of the problem. use tagalog if posible"},
+            {"role": "system", "content": "Comfortable to talk to. Use Tagalog if the user does. Ensure the user is okay; if not, identify the problem category."},
         ]
         tools = [
             {
@@ -34,12 +39,19 @@ class Chat(APIView):
                         "properties": {
                             "category": {
                                 "type": "string",
-                                "enum": ["abuse", "rape", "torture", "other"],
+                                "enum": category_names_list,
                                 "description": "problem category",
                             },
                         },
                         "required": ["category"],
                     },
+                },
+            },
+            {
+                "type": "function",
+                "function": {
+                    "name": "want_report",
+                    "description": "check if user want to see the previous case/reports status",
                 },
             }
         ]
@@ -65,6 +77,10 @@ class Chat(APIView):
                 if function_name == "get_category":
                     category = arguments_dict['category']
                     user_response = self.get_category(category)
+                    response_content = user_response
+                
+                if function_name == "want_report":
+                    user_response = self.want_report()
                     response_content = user_response
 
             return Response({'response': response_content}, status=status.HTTP_200_OK)

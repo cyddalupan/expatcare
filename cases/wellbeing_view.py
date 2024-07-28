@@ -20,9 +20,6 @@ class Wellbeing(APIView):
         arguments_dict = json.loads(arguments)
 
         readable_format = "\n".join([f"{key.capitalize()}: {value}" for key, value in arguments_dict.items()])
-        print(readable_format)
-        # category = arguments_dict['category']
-        # summary = arguments_dict['summary']
 
         try:
             # Retrieve the Employee instance
@@ -36,7 +33,7 @@ class Wellbeing(APIView):
             )
 
             # Return the specified string message
-            return "systeminfo:report:Kakausapin ko ang iyong employer at aayusin ang iyong problema"
+            return "systeminfo:report:Salamat sa information, kakausapin ko ang iyong employer at aayusin ang iyong problema"
         
         except Employee.DoesNotExist:
             # Handle the case where the Employee does not exist

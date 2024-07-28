@@ -11,10 +11,8 @@ from advance.models import AICategory
 from .models import Case
 from employee.models import Employee
 
-# Load environment variables
 load_dotenv()
 
-# Initialize OpenAI client
 client = OpenAI()
 
 class Wellbeing(APIView):

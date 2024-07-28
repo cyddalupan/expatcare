@@ -33,7 +33,7 @@ class Wellbeing(APIView):
             )
 
             # Return the specified string message
-            return "systeminfo:report:Salamat sa information, kakausapin ko ang iyong employer at aayusin ang iyong problema"
+            return "systeminfo$:$report$:$Salamat sa information, kakausapin ko ang iyong employer at aayusin ang iyong problema"
         
         except Employee.DoesNotExist:
             # Handle the case where the Employee does not exist
@@ -98,10 +98,10 @@ class Wellbeing(APIView):
 
     def post(self, request):
         employee_id = request.data.get('employee_id')
-        category = request.data.get('category')
+        topic = request.data.get('category')
         user_message = request.data.get('message')
 
-        category = get_object_or_404(AICategory, category_name=category)
+        category = get_object_or_404(AICategory, category_name=topic)
 
         # Initial messages for the OpenAI chat
         messages = [
@@ -119,6 +119,13 @@ class Wellbeing(APIView):
                         "properties": self.get_properties(category),
                         "required": self.get_param_names(category),
                     },
+                },
+            },
+            {
+                "type": "function",
+                "function": {
+                    "name": "abort",
+                    "description": "The topic is "+topic+". Check if the user wants to abort the report or automatically abort if unrelated topics are discussed.",
                 },
             }
         ]
@@ -144,6 +151,9 @@ class Wellbeing(APIView):
                 if function_name == "log_case":
                     user_response = self.log_case(employee_id, category, arguments)
                     response_content = user_response
+
+                if function_name ==  "abort":
+                    response_content = "systeminfo$:$chat$:$Kung sakaling mayroon kang problema sabihin mo lang agad saakin"
 
             return Response({'response': response_content}, status=status.HTTP_200_OK)
         except Exception as e:

@@ -13,10 +13,10 @@ client = OpenAI()
 
 class Chat(APIView):
     def get_category(self, category):
-        return "systeminfo:" + category + ":Maari mo pa ba ko bigyan ng mga detalye"
+        return "systeminfo$:$" + category + "$:$Maari mo pa ba ko bigyan ng mga detalye"
     
     def want_report(self):
-        return "systeminfo:report:Tama ba na gusto mo tignan ang status ng nakaraan mong reklamo?"
+        return "systeminfo$:$report$:$Tama ba na gusto mo tignan ang status ng nakaraan mong reklamo?"
 
     def post(self, request):
         employee_id = request.data.get('employee_id', None)

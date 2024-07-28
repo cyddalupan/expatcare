@@ -16,10 +16,10 @@ client = OpenAI()
 class Report(APIView):
     def get_report(self, employee_id, user_want):
         if user_want == "file_new_report":
-            return "systeminfo:chat:Meron ka pang gusto ibahagi, ano pa ang nangyari sayo?"
+            return "systeminfo$:$chat$:$Meron ka pang gusto ibahagi, ano pa ang nangyari sayo?"
 
         if user_want == "just_want_to_talk":
-            return "systeminfo:chat:Kamusta ka naman?"
+            return "systeminfo$:$chat$:$Kamusta ka naman?"
         
         try:
             # Retrieve the Employee instance
@@ -30,10 +30,10 @@ class Report(APIView):
 
             # Check if any cases are found
             if not cases.exists():
-                return "systeminfo:chat:Wala ka pang nagagawang reklamo, gusto mo ba mag reklamo?."
+                return "systeminfo$:$chat$:$Wala ka pang nagagawang reklamo, gusto mo ba mag reklamo?."
 
             # Format the message
-            message = f"Eto ang lagay ng iyong report {employee.first_name} {employee.last_name}:<br/>"
+            message = f"systeminfo$:$chat$:$Eto ang lagay ng iyong report {employee.first_name} {employee.last_name}:<br/>"
             for case in cases:
                 message += f"- {case.category}: {case.get_report_status_display()}<br/>"
 

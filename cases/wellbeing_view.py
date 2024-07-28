@@ -18,7 +18,14 @@ load_dotenv()
 client = OpenAI()
 
 class Wellbeing(APIView):
-    def log_case(self, employee_id, category, summary):
+    def log_case(self, employee_id, category, arguments):
+        arguments_dict = json.loads(arguments)
+
+        readable_format = "\n".join([f"{key.capitalize()}: {value}" for key, value in arguments_dict.items()])
+        print(readable_format)
+        # category = arguments_dict['category']
+        # summary = arguments_dict['summary']
+
         try:
             # Retrieve the Employee instance
             employee = Employee.objects.get(id=employee_id)
@@ -27,7 +34,7 @@ class Wellbeing(APIView):
             case = Case.objects.create(
                 employee=employee,
                 category=category,
-                summary=summary
+                report=readable_format
             )
 
             # Return the specified string message
@@ -42,12 +49,7 @@ class Wellbeing(APIView):
             return str(e)
         
     def get_properties(self, category):
-        properties = {
-            "summary": {
-                "type": "string",
-                "description": "The summary of the problem. compile and make it look like a report",
-            },
-        }
+        properties = {}
         
         if category.param_one_name and category.param_one_name.strip():
             properties[category.param_one_name] = {
@@ -80,12 +82,14 @@ class Wellbeing(APIView):
             }
             if category.param_four_enum and category.param_four_enum.strip():
                 properties[category.param_four_name]["enum"] = category.param_four_enum.split(',')
-        print("properties")
-        print(properties )
+        properties["summary"] = {
+            "type": "string",
+            "description": "The summary of the problem. compile and make it look like a report",
+        }
         return properties
 
     def get_param_names(self, category):
-        param_names = ["summary"]
+        param_names = []
         if category.param_one_name and category.param_one_name.strip():
             param_names.append(category.param_one_name)
         if category.param_two_name and category.param_two_name.strip():
@@ -94,6 +98,7 @@ class Wellbeing(APIView):
             param_names.append(category.param_three_name)
         if category.param_four_name and category.param_four_name.strip():
             param_names.append(category.param_four_name)
+        param_names.append("summary")
         return param_names
 
     def post(self, request):
@@ -140,12 +145,9 @@ class Wellbeing(APIView):
             if tool_calls:
                 function_name = tool_calls[0].function.name 
                 arguments = tool_calls[0].function.arguments 
-                arguments_dict = json.loads(arguments)
                 
                 if function_name == "log_case":
-                    category = arguments_dict['category']
-                    summary = arguments_dict['summary']
-                    user_response = self.log_case(employee_id, category, summary)
+                    user_response = self.log_case(employee_id, category, arguments)
                     response_content = user_response
 
             return Response({'response': response_content}, status=status.HTTP_200_OK)

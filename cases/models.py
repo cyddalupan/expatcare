@@ -1,5 +1,5 @@
 from django.db import models
-from employee.models import Employee  # Import the Employee model
+from employee.models import Employee 
 
 class Case(models.Model):
     OPEN = 'open'
@@ -18,7 +18,7 @@ class Case(models.Model):
 
     employee = models.ForeignKey(Employee, on_delete=models.CASCADE, related_name='cases')
     category = models.CharField(max_length=50)
-    summary = models.TextField()
+    report = models.TextField() 
     date_reported = models.DateTimeField(auto_now_add=True)
     report_status = models.CharField(
         max_length=15,

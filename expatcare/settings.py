@@ -37,8 +37,7 @@ ALLOWED_HOSTS = ["*", "https://api.welfareph.com"]
 # Application definition
 
 INSTALLED_APPS = [
-    'colorfield',
-    'admin_interface',
+    'jazzmin',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -158,6 +157,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # Static files (CSS, JavaScript, Images)
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static'),]
 
 # Media files (Uploaded by users)
 MEDIA_URL = '/media/'
@@ -222,3 +222,10 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 X_FRAME_OPTIONS = "SAMEORIGIN"
 SILENCED_SYSTEM_CHECKS = ["security.W019"]
+
+JAZZMIN_SETTINGS = {
+    "site_title": "WelfarePh",
+    "site_header": "WelfarePH",
+    "site_brand": "WelfarePH",
+    "site_logo": "expatcare/logo.png",
+}

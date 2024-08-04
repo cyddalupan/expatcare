@@ -25,11 +25,11 @@ class Wellbeing(APIView):
             # Retrieve the Employee instance
             employee = Employee.objects.get(id=employee_id)
 
-            # Create and save the Case instance
             case = Case.objects.create(
                 employee=employee,
                 category=category,
-                report=readable_format
+                report=readable_format,
+                agency=employee.agency 
             )
 
             # Return the specified string message

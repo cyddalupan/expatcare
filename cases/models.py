@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 from employee.models import Employee 
 
 class Case(models.Model):
@@ -25,6 +26,7 @@ class Case(models.Model):
         choices=STATUS_CHOICES,
         default=OPEN,
     )
+    agency = models.ForeignKey(User, on_delete=models.CASCADE, related_name='cases')
 
     def __str__(self):
         return f"{self.category} - {self.employee.first_name} {self.employee.last_name} ({self.get_report_status_display()})"

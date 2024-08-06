@@ -19,34 +19,44 @@ client = OpenAI()
 class Wellbeing(APIView):
     def log_case(self, employee_id, category, arguments):
         arguments_dict = json.loads(arguments)
-
         readable_format = "\n".join([f"{key.capitalize()}: {value}" for key, value in arguments_dict.items()])
 
         try:
-            # Retrieve the Employee instance
             employee = Employee.objects.get(id=employee_id)
+            
+            # Check if a case exists for the employee with the same category
+            try:
+                case = Case.objects.get(employee=employee, category=category)
+                # Update the existing report
+                case.report = readable_format
+                case.save()
+            except Case.DoesNotExist:
+                # Create a new case
+                case = Case.objects.create(
+                    employee=employee,
+                    category=category,
+                    report=readable_format,
+                    agency=employee.agency
+                )
 
-            case = Case.objects.create(
-                employee=employee,
-                category=category,
-                report=readable_format,
-                agency=employee.agency 
-            )
+            # Check if all required parameters are present
+            all_expected_params = self.get_param_names(category)
+            provided_params = arguments_dict.keys()
 
-            # Return the specified string message
-            return "systeminfo$:$report$:$" + category.closing_message
-        
+            if set(all_expected_params) <= set(provided_params):
+                # All required parameters are present
+                return "systeminfo$:$report$:$" + category.closing_message
+            else:
+                # Not all required parameters are present
+                return None
+
         except Employee.DoesNotExist:
-            # Handle the case where the Employee does not exist
             return "Employee not found"
-
         except Exception as e:
-            # Handle any other exceptions
             return str(e)
         
     def get_properties(self, category):
         properties = {}
-        
         if category.param_one_name and category.param_one_name.strip():
             properties[category.param_one_name] = {
                 "type": "string",
@@ -78,9 +88,10 @@ class Wellbeing(APIView):
             }
             if category.param_four_enum and category.param_four_enum.strip():
                 properties[category.param_four_name]["enum"] = category.param_four_enum.split(',')
+        
         properties["summary"] = {
             "type": "string",
-            "description": "The summary of the problem. compile and make it look like a report",
+            "description": "The summary of the problem. Compile and make it look like a report.",
         }
         return properties
 
@@ -103,10 +114,8 @@ class Wellbeing(APIView):
         user_message = request.data.get('message')
 
         category = get_object_or_404(AICategory, category_name=topic)
-
         general_instruction = get_setting('general_instruction', default='')
 
-        # Initial messages for the OpenAI chat
         messages = [
             {"role": "system", "content": general_instruction + category.role},
         ]
@@ -120,7 +129,6 @@ class Wellbeing(APIView):
                     "parameters": {
                         "type": "object",
                         "properties": self.get_properties(category),
-                        "required": self.get_param_names(category),
                     },
                 },
             },
@@ -153,9 +161,11 @@ class Wellbeing(APIView):
                 
                 if function_name == "log_case":
                     user_response = self.log_case(employee_id, category, arguments)
-                    response_content = user_response
+                    if user_response:
+                        response_content = user_response
+                    # If user_response is None, keep response_content as the original OpenAI response
 
-                if function_name ==  "abort":
+                if function_name == "abort":
                     response_content = "systeminfo$:$chat$:$Kung sakaling mayroon kang problema sabihin mo lang agad saakin"
 
             return Response({'response': response_content}, status=status.HTTP_200_OK)

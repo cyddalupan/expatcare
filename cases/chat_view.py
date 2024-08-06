@@ -1,3 +1,4 @@
+from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status
@@ -13,8 +14,8 @@ load_dotenv()
 client = OpenAI()
 
 class Chat(APIView):
-    def get_category(self, category):
-        return "systeminfo$:$" + category + "$:$Maari mo pa ba ko bigyan ng mga detalye"
+    def get_category(self, category, welcome_message):
+        return "systeminfo$:$" + category + "$:$" + welcome_message
     
     def want_report(self):
         return "systeminfo$:$report$:$Tama ba na gusto mo tignan ang status ng nakaraan mong reklamo?"
@@ -79,7 +80,8 @@ class Chat(APIView):
                 
                 if function_name == "get_category":
                     category = arguments_dict['category']
-                    user_response = self.get_category(category)
+                    welcome_message = get_object_or_404(AICategory, category_name=category).welcome_message
+                    user_response = self.get_category(category, welcome_message)
                     response_content = user_response
                 
                 if function_name == "want_report":

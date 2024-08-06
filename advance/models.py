@@ -2,6 +2,8 @@ from django.db import models
 
 class AICategory(models.Model):
     category_name = models.CharField(max_length=100, unique=True)
+    welcome_message = models.TextField(blank=True, null=True)
+    closing_message = models.TextField(blank=True, null=True)
     role = models.CharField(max_length=500)
     function_description = models.CharField(max_length=500)
     param_one_name = models.CharField(max_length=100, blank=True, null=True)

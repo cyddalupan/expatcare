@@ -34,7 +34,7 @@ class Wellbeing(APIView):
             )
 
             # Return the specified string message
-            return "systeminfo$:$report$:$Salamat sa information, kakausapin ko ang iyong employer at aayusin ang iyong problema"
+            return "systeminfo$:$report$:$" + category.closing_message
         
         except Employee.DoesNotExist:
             # Handle the case where the Employee does not exist

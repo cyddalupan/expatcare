@@ -7,6 +7,7 @@ from dotenv import load_dotenv
 from openai import OpenAI
 
 from advance.models import AICategory
+from advance.utils import get_setting
 
 from .models import Case
 from employee.models import Employee
@@ -103,9 +104,11 @@ class Wellbeing(APIView):
 
         category = get_object_or_404(AICategory, category_name=topic)
 
+        general_instruction = get_setting('general_instruction', default='')
+
         # Initial messages for the OpenAI chat
         messages = [
-            {"role": "system", "content": category.role},
+            {"role": "system", "content": general_instruction + category.role},
         ]
         
         tools = [

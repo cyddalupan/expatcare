@@ -1,7 +1,6 @@
 annotated-types==0.7.0
 anyio==4.4.0
 asgiref==3.8.1
-backports.zoneinfo==0.2.1
 certifi==2024.6.2
 charset-normalizer==3.3.2
 distro==1.9.0

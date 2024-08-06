@@ -4,6 +4,7 @@ from rest_framework import status
 import json
 from dotenv import load_dotenv
 from openai import OpenAI
+from advance.utils import get_setting
 
 from advance.models import AICategory
 
@@ -25,8 +26,10 @@ class Chat(APIView):
         category_names = AICategory.objects.values_list('category_name', flat=True)
         category_names_list = list(category_names)
 
+        general_instruction = get_setting('general_instruction', default='')
+
         messages = [
-            {"role": "system", "content": "Comfortable to talk to. Use Tagalog if the user does. Ensure the user is okay; if not, identify the problem category."},
+            {"role": "system", "content": general_instruction + "Ensure the user is okay; if not, identify the problem category."},
         ]
         tools = [
             {

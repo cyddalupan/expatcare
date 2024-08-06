@@ -20,3 +20,41 @@ class AICategory(models.Model):
 
     def __str__(self):
         return self.category_name
+
+class Setting(models.Model):
+    name = models.CharField(max_length=255, unique=True)
+    value = models.TextField()
+    value_type = models.CharField(
+        max_length=50,
+        choices=[
+            ('str', 'String'),
+            ('int', 'Integer'),
+            ('bool', 'Boolean'),
+            ('float', 'Float'),
+            ('json', 'JSON'),
+        ],
+        default='str'
+    )
+
+    def __str__(self):
+        return f"{self.name}: {self.value}"
+
+    def get_value(self):
+        if self.value_type == 'int':
+            return int(self.value)
+        elif self.value_type == 'bool':
+            return self.value.lower() in ('true', '1')
+        elif self.value_type == 'float':
+            return float(self.value)
+        elif self.value_type == 'json':
+            import json
+            return json.loads(self.value)
+        return self.value
+
+    def set_value(self, new_value):
+        if self.value_type == 'json':
+            import json
+            self.value = json.dumps(new_value)
+        else:
+            self.value = str(new_value)
+        self.save()

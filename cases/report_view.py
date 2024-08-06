@@ -6,6 +6,7 @@ from dotenv import load_dotenv
 from openai import OpenAI
 from .models import Case
 from employee.models import Employee
+from advance.utils import get_setting
 
 # Load environment variables
 load_dotenv()
@@ -54,8 +55,10 @@ class Report(APIView):
         if not employee_id or not user_message:
             return Response({'error': 'Employee ID and message are required.'}, status=status.HTTP_400_BAD_REQUEST)
 
+        general_instruction = get_setting('general_instruction', default='')
+
         messages = [
-            {"role": "system", "content": "Comfortable to talk to. Use Tagalog if the user does. Ask if they want updates on their previous case/report."},
+            {"role": "system", "content": general_instruction + "Ask if they want updates on their previous case/report."},
         ]
         tools = [
             {

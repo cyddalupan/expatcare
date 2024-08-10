@@ -1,3 +1,6 @@
+Current Theme used
+https://django-jazzmin.readthedocs.io/
+
 # creating other report
 {
 	"employee_id":"1",

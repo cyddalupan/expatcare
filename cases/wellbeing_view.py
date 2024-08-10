@@ -24,14 +24,11 @@ class Wellbeing(APIView):
         try:
             employee = Employee.objects.get(id=employee_id)
             
-            # Check if a case exists for the employee with the same category
             try:
                 case = Case.objects.get(employee=employee, category=category)
-                # Update the existing report
                 case.report = readable_format
                 case.save()
             except Case.DoesNotExist:
-                # Create a new case
                 case = Case.objects.create(
                     employee=employee,
                     category=category,
@@ -125,7 +122,7 @@ class Wellbeing(APIView):
                 "type": "function",
                 "function": {
                     "name": "log_case",
-                    "description": category.function_description,
+                    "description": "trigger this function if you get any parameter," + category.function_description,
                     "parameters": {
                         "type": "object",
                         "properties": self.get_properties(category),
@@ -163,11 +160,16 @@ class Wellbeing(APIView):
                     user_response = self.log_case(employee_id, category, arguments)
                     if user_response:
                         response_content = user_response
-                    # If user_response is None, keep response_content as the original OpenAI response
 
                 if function_name == "abort":
                     response_content = "systeminfo$:$chat$:$Kung sakaling mayroon kang problema sabihin mo lang agad saakin"
 
+            if not response_content:
+                completion = client.chat.completions.create(
+                    model="gpt-4o-mini",
+                    messages=messages,
+                )
+                response_content = completion.choices[0].message.content
             return Response({'response': response_content}, status=status.HTTP_200_OK)
         except Exception as e:
             return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

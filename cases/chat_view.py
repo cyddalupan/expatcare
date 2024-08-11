@@ -15,7 +15,7 @@ client = OpenAI()
 
 class Chat(APIView):
     def get_category(self, category, welcome_message):
-        return "systeminfo$:$" + category + "$:$" + welcome_message
+        return "systeminfo$:$" + (category or "") + "$:$" + (welcome_message or "")
     
     def want_report(self):
         return "systeminfo$:$report$:$Tama ba na gusto mo tignan ang status ng nakaraan mong reklamo?"
@@ -30,7 +30,7 @@ class Chat(APIView):
         general_instruction = get_setting('general_instruction', default='')
 
         messages = [
-            {"role": "system", "content": general_instruction + "Ensure the user is okay; if not, identify the problem category."},
+            {"role": "system", "content": (general_instruction or "") + "Ensure the user is okay; if not, identify the problem category."},
         ]
         tools = [
             {

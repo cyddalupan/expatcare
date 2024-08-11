@@ -42,7 +42,7 @@ class Wellbeing(APIView):
 
             if set(all_expected_params) <= set(provided_params):
                 # All required parameters are present
-                return "systeminfo$:$report$:$" + category.closing_message
+                return "systeminfo$:$report$:$" + (category.closing_message or "")
             else:
                 # Not all required parameters are present
                 return None
@@ -114,7 +114,7 @@ class Wellbeing(APIView):
         general_instruction = get_setting('general_instruction', default='')
 
         messages = [
-            {"role": "system", "content": general_instruction + category.role},
+            {"role": "system", "content": general_instruction + (category.role or "")},
         ]
         
         tools = [
@@ -122,7 +122,7 @@ class Wellbeing(APIView):
                 "type": "function",
                 "function": {
                     "name": "log_case",
-                    "description": "trigger this function if you get any parameter," + category.function_description,
+                    "description": "trigger this function if you get any parameter," + (category.function_description or ""),
                     "parameters": {
                         "type": "object",
                         "properties": self.get_properties(category),
@@ -133,7 +133,7 @@ class Wellbeing(APIView):
                 "type": "function",
                 "function": {
                     "name": "abort",
-                    "description": "The topic is "+topic+". Check if the user wants to abort the report or automatically abort if unrelated topics are discussed.",
+                    "description": "The topic is " + (topic or "") + ". Check if the user wants to abort the report or automatically abort if unrelated topics are discussed.",
                 },
             }
         ]

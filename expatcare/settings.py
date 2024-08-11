@@ -54,6 +54,7 @@ INSTALLED_APPS = [
     'advance',
     'employee',
     'cases',
+    'chats',
 ]
 
 MIDDLEWARE = [

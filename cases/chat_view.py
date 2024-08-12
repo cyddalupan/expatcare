@@ -6,7 +6,7 @@ import json
 from dotenv import load_dotenv
 from openai import OpenAI
 from advance.utils import get_setting
-from chats.models import Chat
+from chats.models import Chat as ChatModel
 from employee.models import Employee
 
 from advance.models import AICategory
@@ -32,7 +32,7 @@ class Chat(APIView):
         
         if latest_user_message:
             employee = Employee.objects.get(id=employee_id)
-            Chat.objects.create(
+            ChatModel.objects.create(
                 employee=employee,
                 agency=employee.agency,
                 message=latest_user_message,
@@ -102,7 +102,7 @@ class Chat(APIView):
                     response_content = user_response
 
             if response_content:
-                Chat.objects.create(
+                ChatModel.objects.create(
                     employee=employee,
                     agency=employee.agency,
                     message=response_content,

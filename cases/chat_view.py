@@ -6,6 +6,7 @@ import json
 from dotenv import load_dotenv
 from openai import OpenAI
 from advance.utils import get_setting
+from chats.models import Chat
 from employee.models import Employee
 
 from advance.models import AICategory

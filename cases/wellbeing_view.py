@@ -8,7 +8,7 @@ from openai import OpenAI
 
 from advance.models import AICategory
 from advance.utils import get_setting
-
+from chats.models import Chat
 from .models import Case
 from employee.models import Employee
 
@@ -139,6 +139,17 @@ class Wellbeing(APIView):
         ]
 
         if user_message:
+            latest_user_message = user_message[-1]['text'] if user_message else None
+
+            if latest_user_message:
+                employee = Employee.objects.get(id=employee_id)
+                Chat.objects.create(
+                    employee=employee,
+                    agency=employee.agency,
+                    message=latest_user_message,
+                    sender='Employee'
+                )
+
             for obj in user_message:
                 sender = "user" if obj['sender'] != "AI" else "system"
                 messages.append({"role": sender, "content": obj['text']})
@@ -170,6 +181,15 @@ class Wellbeing(APIView):
                     messages=messages,
                 )
                 response_content = completion.choices[0].message.content
+
+            if response_content:
+                Chat.objects.create(
+                    employee=employee,
+                    agency=employee.agency,
+                    message=response_content,
+                    sender='AI'
+                )
+
             return Response({'response': response_content}, status=status.HTTP_200_OK)
         except Exception as e:
             return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

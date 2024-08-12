@@ -6,6 +6,7 @@ import json
 from dotenv import load_dotenv
 from openai import OpenAI
 from advance.utils import get_setting
+from employee.models import Employee
 
 from advance.models import AICategory
 
@@ -22,10 +23,21 @@ class Chat(APIView):
 
     def post(self, request):
         employee_id = request.data.get('employee_id', None)
-        usermessage = request.data.get('message', None)
+        user_message = request.data.get('message', None)
         
         category_names = AICategory.objects.values_list('category_name', flat=True)
         category_names_list = list(category_names)
+        latest_user_message = user_message[-1]['text'] if user_message else None
+        
+        if latest_user_message:
+            employee = Employee.objects.get(id=employee_id)
+            Chat.objects.create(
+                employee=employee,
+                agency=employee.agency,
+                message=latest_user_message,
+                sender='Employee'
+            )
+
 
         general_instruction = get_setting('general_instruction', default='')
 
@@ -60,7 +72,7 @@ class Chat(APIView):
             }
         ]
 
-        for obj in usermessage:
+        for obj in user_message:
             sender = "user" if obj['sender'] != "AI" else "system"
             messages.append({"role": sender, "content": obj['text']})
 
@@ -87,6 +99,14 @@ class Chat(APIView):
                 if function_name == "want_report":
                     user_response = self.want_report()
                     response_content = user_response
+
+            if response_content:
+                Chat.objects.create(
+                    employee=employee,
+                    agency=employee.agency,
+                    message=response_content,
+                    sender='AI'
+                )
 
             return Response({'response': response_content}, status=status.HTTP_200_OK)
         except Exception as e:

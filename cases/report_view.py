@@ -6,6 +6,7 @@ from dotenv import load_dotenv
 from openai import OpenAI
 from .models import Case
 from employee.models import Employee
+from chats.models import Chat
 from advance.utils import get_setting
 
 # Load environment variables
@@ -55,6 +56,17 @@ class Report(APIView):
         if not employee_id or not user_message:
             return Response({'error': 'Employee ID and message are required.'}, status=status.HTTP_400_BAD_REQUEST)
 
+        latest_user_message = user_message[-1]['text'] if user_message else None
+        
+        if latest_user_message:
+            employee = Employee.objects.get(id=employee_id)
+            Chat.objects.create(
+                employee=employee,
+                agency=employee.agency,
+                message=latest_user_message,
+                sender='Employee'
+            )
+
         general_instruction = get_setting('general_instruction', default='')
 
         messages = [
@@ -103,6 +115,14 @@ class Report(APIView):
                     user_want = arguments_dict['user_want']
                     user_response = self.get_report(employee_id, user_want)
                     response_content = user_response
+
+            if response_content:
+                Chat.objects.create(
+                    employee=employee,
+                    agency=employee.agency,
+                    message=response_content,
+                    sender='AI'
+                )
 
             return Response({'response': response_content}, status=status.HTTP_200_OK)
         except Exception as e:

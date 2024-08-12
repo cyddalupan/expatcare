@@ -6,8 +6,8 @@ admin.site.unregister(Employee)
 
 class ChatInline(admin.TabularInline):
     model = Chat
-    fields = ('message', 'sender', 'timestamp')
-    readonly_fields = ('message', 'sender', 'timestamp')
+    fields = ('sender', 'message', 'timestamp')
+    readonly_fields = ('sender', 'message', 'timestamp')
     extra = 0
     can_delete = False
     show_change_link = False

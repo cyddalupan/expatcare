@@ -1,5 +1,27 @@
 from django.contrib import admin
 from .models import Employee
+from cases.models import Case
+from chats.models import Chat
+
+class ChatInline(admin.TabularInline):
+    model = Chat
+    fields = ('sender', 'message', 'timestamp')
+    readonly_fields = ('sender', 'message', 'timestamp')
+    extra = 0
+    can_delete = False
+    show_change_link = False
+
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        return qs.order_by('-timestamp')
+
+class CaseInline(admin.TabularInline):
+    model = Case
+    fields = ('category', 'date_reported', 'report_status', 'agency')
+    readonly_fields = ('category', 'date_reported', 'report_status', 'agency')
+    extra = 0
+    can_delete = False
+    show_change_link = False
 
 class EmployeeAdmin(admin.ModelAdmin):
     list_display = (
@@ -48,6 +70,8 @@ class EmployeeAdmin(admin.ModelAdmin):
             )
         }),
     )
+
+    inlines = [CaseInline, ChatInline]
 
     def agency_name(self, obj):
         return obj.agency.username 

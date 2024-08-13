@@ -13,6 +13,8 @@ class ChatHistoryView(APIView):
         # Fetch the last 12 chat messages for this employee
         chat_history = Chat.objects.filter(employee=employee).order_by('-timestamp')[:12]
         
+        chat_history = reversed(chat_history)
+
         # Serialize the chat history (assuming you have a serializer or simply use dicts)
         chat_data = [
             {

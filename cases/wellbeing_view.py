@@ -133,7 +133,7 @@ class Wellbeing(APIView):
                 "type": "function",
                 "function": {
                     "name": "abort",
-                    "description": "The topic is " + (topic or "") + ". Check if the user wants to abort the report or automatically abort if unrelated topics are discussed.",
+                    "description": "This changes the topic. Trigger this abort function when user is talking about a different topic or dont want to continue with the topic. The current topic is " + (topic or ""),
                 },
             }
         ]

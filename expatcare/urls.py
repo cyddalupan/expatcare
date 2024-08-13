@@ -23,12 +23,13 @@ from django.contrib.auth import views as auth_views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('advance/', include('advance.urls')),
-    path('api-auth/', include('rest_framework.urls')),  # Optional for DRF's browsable API
+    path('api-auth/', include('rest_framework.urls')),
     path('dj-rest-auth/', include('dj_rest_auth.urls')),
     path('dj-rest-auth/registration/', include('dj_rest_auth.registration.urls')),
     path('accounts/', include('django.contrib.auth.urls')),
     path('employee/', include('employee.urls')),
     path('cases/', include('cases.urls')),
+    path('chat/', include('chats.urls')),
 ]
 
 if settings.DEBUG:

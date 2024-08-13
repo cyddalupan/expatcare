@@ -133,3 +133,24 @@ https://django-jazzmin.readthedocs.io/
 		}
 	]
 }
+
+
+# abort rape report - welbeing/
+{
+	"employee_id":"1",
+	"category":"rape",
+	"message":[
+		{
+			"sender": "User",
+			"text": "ako po ay nirape ng aking amo. tatlong beses na po itong nangyayari"
+		},
+		{
+			"sender": "AI",
+			"text": "Ikinalulungkot kong marinig ang tungkol sa iyong karanasan. Mahalaga ang iyong kaligtasan at kapakanan, at nandito ako upang tulungan ka. Kailangan ko munang makuha ang ilang impormasyon upang maitala ito ng maayos. \n\nKailan nangyari ang insidente? Nakausap mo na ba ang ahensya sa ibang bansa tungkol dito? Ano ang lokasyon mo ngayon? At maaari mo bang ibigay ang isang maikling buod ng iyong sitwasyon?"
+		},
+		{
+			"sender": "User",
+			"text": "ok na po pala ako"
+		}
+	]
+}

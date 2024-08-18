@@ -38,3 +38,6 @@ tqdm==4.66.4
 typing_extensions==4.12.2
 urllib3==2.2.2
 zipp==3.19.2
+#pip install django-countries
+django-countries=7.6.1
+

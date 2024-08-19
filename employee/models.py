@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django_countries.fields import CountryField  # Import CountryField from django-countries
 from fra.models import FRA
 
 class Employee(models.Model):
@@ -11,15 +12,45 @@ class Employee(models.Model):
     address = models.CharField(max_length=255)
     phone_number = models.CharField(max_length=20)
     email = models.EmailField()
-    emergency_contact_name = models.CharField(max_length=100)
-    emergency_contact_phone = models.CharField(max_length=20)
-    fra = models.ForeignKey(FRA, on_delete=models.SET_NULL, null=True, blank=True)
+    
+    date_deployment = models.DateField(null=True, blank=True)  # Date Deployment
+    fra = models.ForeignKey(FRA, on_delete=models.SET_NULL, null=True, blank=True)  # Foreign Recruitment Agency
+    main_status = models.CharField(
+        max_length=50, 
+        choices=[
+            ('active', 'Active'),
+            ('with_complain', 'With Complain'),
+            ('arrive', 'Arrive'),
+            ('no_communication', 'No Communication'),
+            ('with_hearing', 'With Hearing'),
+            ('blacklist', 'Blacklist'),
+        ],
+        default='active'
+    )
+    
+    applicant_type = models.CharField(
+        max_length=50, 
+        choices=[
+            ('household', 'Household'),
+            ('skilled', 'Skilled'),
+        ],
+        default='household'
+    ) 
+    
+    created_date_of_report = models.DateField(null=True, blank=True)  # Created Date of Report
+    country = CountryField()  # Country
+    facebook = models.URLField(max_length=255, blank=True, null=True)  # Facebook
+    whatsapp = models.CharField(max_length=20, blank=True, null=True)  # WhatsApp
+    consistency_percentage = models.DecimalField(max_digits=5, decimal_places=2, default=0.00)  # Consistency Percentage
+    
     agency = models.ForeignKey(User, on_delete=models.CASCADE, limit_choices_to={'groups__name': 'Agency'}, related_name='employees')
 
+    emergency_contact_name = models.CharField(max_length=100)
+    emergency_contact_phone = models.CharField(max_length=20)
+    
     def __str__(self):
         return f"{self.first_name} {self.last_name}"
 
-    
     class Meta:
         verbose_name = "Applicant"
         verbose_name_plural = "Applicants"

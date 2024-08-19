@@ -35,6 +35,13 @@ class EmployeeAdmin(admin.ModelAdmin):
         'email', 
         'agency', 
         'emergency_contact_name',
+        'date_deployment',
+        'fra',
+        'main_status',
+        'applicant_type',
+        'created_date_of_report',
+        'country',
+        'consistency_percentage',
     )
     search_fields = (
         'first_name', 
@@ -46,9 +53,18 @@ class EmployeeAdmin(admin.ModelAdmin):
         'agency__username', 
         'address', 
         'emergency_contact_name', 
+        'fra__name',
+        'main_status',
+        'applicant_type',
+        'country',
     )
     list_filter = (
         'date_of_birth',
+        'date_deployment',
+        'fra',
+        'main_status',
+        'applicant_type',
+        'country',
     )
     fieldsets = (
         (None, {
@@ -61,6 +77,15 @@ class EmployeeAdmin(admin.ModelAdmin):
                 'address', 
                 'phone_number', 
                 'email',
+                'date_deployment',
+                'fra',
+                'main_status',
+                'applicant_type',
+                'created_date_of_report',
+                'country',
+                'facebook',
+                'whatsapp',
+                'consistency_percentage',
             )
         }),
         ('Emergency Contact', {
@@ -81,12 +106,11 @@ class EmployeeAdmin(admin.ModelAdmin):
     def get_queryset(self, request):
         qs = super().get_queryset(request)
         if request.user.groups.filter(name='Agency').exists():
-            # Assuming that the 'agency' field is a ForeignKey to the User model
             return qs.filter(agency=request.user)
         return qs
+
     def save_model(self, request, obj, form, change):
         if not change or not obj.agency:
-            # Only set the agency if the object is new or doesn't have one
             obj.agency = request.user
         super().save_model(request, obj, form, change)
 

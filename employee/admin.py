@@ -75,7 +75,7 @@ class EmployeeAdmin(admin.ModelAdmin):
         'address', 
         'phone_number', 
         'email', 
-        'agency', 
+        'agency',
         'emergency_contact_name',
         'date_deployment',
         'fra',
@@ -85,6 +85,7 @@ class EmployeeAdmin(admin.ModelAdmin):
         'country',
         'consistency_percentage',
         'export_cases_link', 
+        'generate_statement_link',
     )
     search_fields = (
         'first_name', 
@@ -161,11 +162,17 @@ class EmployeeAdmin(admin.ModelAdmin):
         return format_html('<a class="button" href="{}">Export Cases to Excel</a>', url)
     export_cases_link.short_description = "Export Cases"
 
+    def generate_statement_link(self, obj):
+        url = reverse("admin:generate_statement") + f"?employee_id={obj.id}"
+        return format_html('<a class="button" href="{}">Generate Statement of Facts</a>', url)
+    generate_statement_link.short_description = "Generate Statement of Facts"
+
     # Registering the custom export URL
     def get_urls(self):
         urls = super().get_urls()
         custom_urls = [
             path('export-cases/', self.admin_site.admin_view(self.export_cases), name='export_cases'),
+            path('generate-statement/', self.admin_site.admin_view(self.generate_statement), name='generate_statement'),
         ]
         return custom_urls + urls
 
@@ -194,4 +201,10 @@ class EmployeeAdmin(admin.ModelAdmin):
         df.to_excel(response, index=False)
         return response
 
+    def generate_statement(self, request):
+        # This will handle the statement generation logic.
+        # For now, it can just return a simple response to indicate the button works.
+        return HttpResponse("Generate Statement of Facts button clicked!")
+
 admin.site.register(Employee, EmployeeAdmin)
+

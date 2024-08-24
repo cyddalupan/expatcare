@@ -1,5 +1,7 @@
 from django.contrib import admin
 from django.http import HttpResponse
+from dotenv import load_dotenv
+from openai import OpenAI
 from rangefilter.filters import DateRangeFilter
 from django.urls import path
 from django.utils.html import format_html
@@ -8,6 +10,10 @@ from django.urls import reverse
 from .models import Employee
 from cases.models import Case
 from chats.models import Chat
+
+load_dotenv()
+
+client = OpenAI()
 
 class ChatInline(admin.TabularInline):
     model = Chat
@@ -208,3 +214,16 @@ class EmployeeAdmin(admin.ModelAdmin):
 
 admin.site.register(Employee, EmployeeAdmin)
 
+def create_statement(article):
+    messages = [
+        {"role": "system", "content": 'You are an AI model tasked with generating a "Statement of Facts" for a case involving an employee, with the goal of favoring the agency while still maintaining a fair, win-win tone where possible. The "Statement of Facts" should be clear, concise, and factual, summarizing the key details and events relevant to the case.'},
+    ]
+
+    try:
+        completion = client.chat.completions.create(
+            model="gpt-4o",
+            messages=messages,
+        )
+        return completion.choices[0].message.content
+    except Exception as e:
+        return None

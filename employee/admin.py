@@ -214,9 +214,21 @@ class EmployeeAdmin(admin.ModelAdmin):
 
 admin.site.register(Employee, EmployeeAdmin)
 
-def create_statement(article):
+def create_statement(employee_id):
+    # Step 1: Retrieve all cases for the employee that are not closed
+    cases = Case.objects.filter(employee_id=employee_id).exclude(report_status=Case.CLOSED)
+    
+    # Step 2: Format the case information into a summary
+    case_details = []
+    for case in cases:
+        case_details.append(f"Category: {case.category}, Status: {case.get_report_status_display()}, Date Reported: {case.date_reported.strftime('%Y-%m-%d')}, Report: {case.report[:100]}...")
+
+    case_info = "\n".join(case_details)
+
+    # Step 3: Add the case information to the messages
     messages = [
         {"role": "system", "content": 'You are an AI model tasked with generating a "Statement of Facts" for a case involving an employee, with the goal of favoring the agency while still maintaining a fair, win-win tone where possible. The "Statement of Facts" should be clear, concise, and factual, summarizing the key details and events relevant to the case.'},
+        {"role": "user", "content": f"Employee ID: {employee_id}\n\nCase Details:\n{case_info}"}
     ]
 
     try:

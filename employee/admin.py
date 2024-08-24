@@ -76,7 +76,6 @@ class EmployeeAdmin(admin.ModelAdmin):
         'phone_number', 
         'email', 
         'agency', 
-        'export_cases_link', 
         'emergency_contact_name',
         'date_deployment',
         'fra',
@@ -85,6 +84,7 @@ class EmployeeAdmin(admin.ModelAdmin):
         'created_date_of_report',
         'country',
         'consistency_percentage',
+        'export_cases_link', 
     )
     search_fields = (
         'first_name', 
@@ -184,6 +184,7 @@ class EmployeeAdmin(admin.ModelAdmin):
                 'Date Reported': case.date_reported.replace(tzinfo=None) if case.date_reported else None,
                 'Report Status': case.report_status,
                 'Agency': case.agency.username if case.agency else None,
+                'Report Details': case.report,
             })
 
         # Creating a DataFrame and exporting to Excel

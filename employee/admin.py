@@ -6,6 +6,8 @@ from rangefilter.filters import DateRangeFilter
 from django.urls import path
 from django.utils.html import format_html
 import pandas as pd
+from django.contrib import messages
+from django.shortcuts import redirect
 from django.urls import reverse
 from .models import Employee
 from cases.models import Case
@@ -169,8 +171,8 @@ class EmployeeAdmin(admin.ModelAdmin):
     export_cases_link.short_description = "Export Cases"
 
     def generate_statement_link(self, obj):
-        url = reverse("admin:generate_statement") + f"?employee_id={obj.id}"
-        return format_html('<a class="button" href="{}">Generate Statement of Facts</a>', url)
+        url = reverse('admin:employee-generate-statement', args=[obj.pk])
+        return format_html('<a href="{}">Generate Statement of Facts</a>', url)
     generate_statement_link.short_description = "Generate Statement of Facts"
 
     # Registering the custom export URL
@@ -178,7 +180,7 @@ class EmployeeAdmin(admin.ModelAdmin):
         urls = super().get_urls()
         custom_urls = [
             path('export-cases/', self.admin_site.admin_view(self.export_cases), name='export_cases'),
-            path('generate-statement/', self.admin_site.admin_view(self.generate_statement), name='generate_statement'),
+            path('generate-statement/<int:employee_id>/', self.admin_site.admin_view(self.generate_statement), name='employee-generate-statement'),
         ]
         return custom_urls + urls
 
@@ -207,10 +209,17 @@ class EmployeeAdmin(admin.ModelAdmin):
         df.to_excel(response, index=False)
         return response
 
-    def generate_statement(self, request):
-        # This will handle the statement generation logic.
-        # For now, it can just return a simple response to indicate the button works.
-        return HttpResponse("Generate Statement of Facts button clicked!")
+    def generate_statement(self, request, employee_id):
+        # Call the create_statement function
+        generated_text = create_statement(employee_id)
+
+        print("generated_text",generated_text)
+        
+        # Add a success message
+        messages.success(request, 'Statement of Facts generated successfully.')
+        
+        # Redirect back to the employee's change page
+        return redirect(f'/admin/employee/employee/{employee_id}/change/#cases-tab') 
 
 admin.site.register(Employee, EmployeeAdmin)
 

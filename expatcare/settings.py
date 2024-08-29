@@ -58,6 +58,7 @@ INSTALLED_APPS = [
     'cases',
     'chats',
     'fra',
+    'statement_of_facts',
 ]
 
 MIDDLEWARE = [

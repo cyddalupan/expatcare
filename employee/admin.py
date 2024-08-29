@@ -12,6 +12,7 @@ from django.urls import reverse
 from .models import Employee
 from cases.models import Case
 from chats.models import Chat
+from statement_of_facts.models import StatementOfFacts
 
 load_dotenv()
 
@@ -72,6 +73,14 @@ class CaseInline(admin.TabularInline):
         response['Content-Disposition'] = 'attachment; filename="cases.xlsx"'
         df.to_excel(response, index=False)
         return response
+
+class StatementOfFactsInline(admin.TabularInline):
+    model = StatementOfFacts
+    extra = 0
+    readonly_fields = ('date_created', 'date_updated', 'status')
+    fields = ('case', 'generated_text', 'status', 'date_created', 'date_updated')
+    can_delete = False
+    show_change_link = False
 
 class EmployeeAdmin(admin.ModelAdmin):
     list_display = (
@@ -147,7 +156,7 @@ class EmployeeAdmin(admin.ModelAdmin):
             )
         }),
     )
-    inlines = [CaseInline, ChatInline]
+    inlines = [CaseInline, ChatInline, StatementOfFactsInline]
 
     def agency_name(self, obj):
         return obj.agency.username 

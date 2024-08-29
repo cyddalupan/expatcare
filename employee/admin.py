@@ -90,7 +90,7 @@ class StatementOfFactsInline(admin.TabularInline):
     model = StatementOfFacts
     extra = 0
     readonly_fields = ('date_created', 'date_updated', 'status')
-    fields = ('case', 'generated_text', 'status', 'date_created', 'date_updated')
+    fields = ('generated_text', 'status', 'date_created', 'date_updated')
     can_delete = False
     show_change_link = False
 
@@ -240,8 +240,14 @@ class EmployeeAdmin(admin.ModelAdmin):
         # Call the create_statement function
         generated_text = create_statement(employee_id)
 
-        print("generated_text",generated_text)
-        
+        employee = Employee.objects.get(id=employee_id)
+
+        StatementOfFacts.objects.create(
+            employee=employee,
+            generated_text=generated_text,
+            status='draft'  # Set initial status to 'draft'
+        )
+
         # Add a success message
         messages.success(request, 'Statement of Facts generated successfully.')
         

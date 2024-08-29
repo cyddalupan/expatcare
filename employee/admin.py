@@ -26,6 +26,12 @@ class ChatInline(admin.TabularInline):
     can_delete = False
     show_change_link = False
 
+    def has_add_permission(self, request, obj):
+        return False
+
+    def has_change_permission(self, request, obj=None):
+        return False
+
     def get_queryset(self, request):
         qs = super().get_queryset(request)
         return qs.order_by('-timestamp')
@@ -37,6 +43,12 @@ class CaseInline(admin.TabularInline):
     extra = 0
     can_delete = False
     show_change_link = False
+
+    def has_add_permission(self, request, obj):
+        return False
+
+    def has_change_permission(self, request, obj=None):
+        return False
 
     def case_link(self, obj):
         link = reverse("admin:cases_case_change", args=[obj.id])  # admin:appname_modelname_change
@@ -81,6 +93,12 @@ class StatementOfFactsInline(admin.TabularInline):
     fields = ('case', 'generated_text', 'status', 'date_created', 'date_updated')
     can_delete = False
     show_change_link = False
+
+    def has_add_permission(self, request, obj):
+        return False
+
+    def has_change_permission(self, request, obj=None):
+        return False
 
 class EmployeeAdmin(admin.ModelAdmin):
     list_display = (

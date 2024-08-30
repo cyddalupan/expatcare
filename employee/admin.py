@@ -7,12 +7,14 @@ from django.urls import path
 from django.utils.html import format_html
 import pandas as pd
 from django.contrib import messages
-from django.shortcuts import redirect
+from django.shortcuts import redirect, render
+from django.template.response import TemplateResponse
 from django.urls import reverse
 from .models import Employee
 from cases.models import Case
 from chats.models import Chat
 from statement_of_facts.models import StatementOfFacts
+from .forms import EmotionSelectionForm
 
 load_dotenv()
 
@@ -240,26 +242,38 @@ class EmployeeAdmin(admin.ModelAdmin):
         return response
 
     def generate_statement(self, request, employee_id):
-        # Call the create_statement function
-        generated_text = create_statement(employee_id)
+        if 'apply' in request.POST:
+            form = EmotionSelectionForm(request.POST)
+            if form.is_valid():
+                emotion = form.cleaned_data['emotion']
 
-        employee = Employee.objects.get(id=employee_id)
+                generated_text = create_statement(employee_id, emotion)
 
-        StatementOfFacts.objects.create(
-            employee=employee,
-            generated_text=generated_text,
-            status='draft'  # Set initial status to 'draft'
-        )
+                employee = Employee.objects.get(id=employee_id)
 
-        # Add a success message
-        messages.success(request, 'Statement of Facts generated successfully.')
-        
-        # Redirect back to the employee's change page
-        return redirect(f'/admin/employee/employee/{employee_id}/change/#cases-tab') 
+                StatementOfFacts.objects.create(
+                    employee=employee,
+                    generated_text=generated_text,
+                    status='draft'
+                )
+
+                messages.success(request, 'Statement of Facts generated successfully.')
+                return redirect(f'/admin/employee/employee/{employee_id}/change/#cases-tab')
+        else:
+            form = EmotionSelectionForm()
+
+        context = self.admin_site.each_context(request)
+        context.update({
+            'form': form,
+            'employee_id': employee_id,
+            'title': 'Select Emotion for Statement of Facts',
+        })
+
+        return TemplateResponse(request, "admin/emotion_selection_form.html", context)
 
 admin.site.register(Employee, EmployeeAdmin)
 
-def create_statement(employee_id):
+def create_statement(employee_id, emotion):
     # Step 1: Retrieve all cases for the employee that are not closed
     cases = Case.objects.filter(employee_id=employee_id).exclude(report_status=Case.CLOSED)
     

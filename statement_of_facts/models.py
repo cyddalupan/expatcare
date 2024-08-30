@@ -25,3 +25,7 @@ class StatementOfFacts(models.Model):
     def formatted_analysis(self):
         html = markdown.markdown(self.consistency_analysis)
         return mark_safe(html)
+
+    class Meta:
+        verbose_name = "Statement of Facts"
+        verbose_name_plural = "Statements of Facts"

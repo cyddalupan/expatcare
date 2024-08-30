@@ -18,4 +18,9 @@ class EmotionSelectionForm(forms.Form):
         help_text="If selected, the Statement of Facts will include an analysis of the applicant's chat history, "
                   "reviewing the consistency of their statements and adjusting the final summary based on the analysis."
     )
-    reference_link = forms.TextInput()
+    
+    reference_link = forms.URLField(
+        required=False,
+        label="Reference Link",
+        help_text="Provide a URL for additional reference material that should be considered in the Statement of Facts."
+    )

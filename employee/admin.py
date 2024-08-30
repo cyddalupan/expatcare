@@ -90,12 +90,13 @@ class CaseInline(admin.TabularInline):
 
 class StatementOfFactsInline(admin.TabularInline):
     model = StatementOfFacts
+    verbose_name = "Statement of Facts"
+    verbose_name_plural = "Statements of Facts"
     extra = 0
     readonly_fields = ('date_created', 'date_updated', 'ai_reference_link', 'emotion', 'status', 'formatted_text', 'formatted_analysis')
     fields = ('formatted_text', 'formatted_analysis', 'ai_reference_link', 'status', 'emotion', 'date_created')
     can_delete = False
     show_change_link = False
-    
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)
@@ -268,8 +269,7 @@ class EmployeeAdmin(admin.ModelAdmin):
                     
                     # Perform the consistency analysis
                     consistency_analysis = build_consistency_analysis(chat_history)
-                    print("consistency_analysis:",consistency_analysis)
-
+                    
                 generated_text = create_statement(employee_id, emotion, consistency_analysis, reference_link)
 
                 employee = Employee.objects.get(id=employee_id)
@@ -359,7 +359,6 @@ def build_consistency_analysis(chat_history):
         "**Conversation:**"
     )
 
-    print("introduction", introduction)
     chat_history_string = "\n".join(chat_history)
 
     # Build the array of messages (this is how you'd typically structure it for an API call)
@@ -368,15 +367,12 @@ def build_consistency_analysis(chat_history):
         {"role": "system", "content": introduction},
         {"role": "user", "content": chat_history_string},
     ]
-    print("messages", messages)
 
     try:
-        print("try")
         completion = client.chat.completions.create(
             model="gpt-4o",
             messages=messages,
         )
-        print("completion", completion)
         return completion.choices[0].message.content
     except Exception as e:
         return ""

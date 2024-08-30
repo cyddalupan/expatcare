@@ -91,10 +91,11 @@ class CaseInline(admin.TabularInline):
 class StatementOfFactsInline(admin.TabularInline):
     model = StatementOfFacts
     extra = 0
-    readonly_fields = ('date_created', 'date_updated', 'emotion', 'status', 'formatted_text')
-    fields = ('formatted_text', 'status', 'emotion', 'date_created')
+    readonly_fields = ('date_created', 'date_updated', 'ai_reference_link', 'emotion', 'status', 'formatted_text', 'formatted_analysis')
+    fields = ('formatted_text', 'formatted_analysis', 'ai_reference_link', 'status', 'emotion', 'date_created')
     can_delete = False
     show_change_link = False
+    
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)
@@ -102,6 +103,9 @@ class StatementOfFactsInline(admin.TabularInline):
 
     def formatted_text(self, obj):
         return obj.formatted_text()
+
+    def formatted_analysis(self, obj):
+        return obj.formatted_analysis()
 
     def has_add_permission(self, request, obj):
         return False
@@ -250,8 +254,23 @@ class EmployeeAdmin(admin.ModelAdmin):
             form = EmotionSelectionForm(request.POST)
             if form.is_valid():
                 emotion = form.cleaned_data['emotion']
+                include_consistency = form.cleaned_data.get('include_consistency_analysis', False)
+                reference_link = form.cleaned_data.get('reference_link', "")
+            
+                consistency_analysis = ""
 
-                generated_text = create_statement(employee_id, emotion)
+                if include_consistency:
+                    # Fetch the last 25 chat messages for the employee
+                    chat_history = Chat.objects.filter(employee_id=employee_id).order_by('-timestamp')[:30]
+                    
+                    # Convert chat history to a list of strings or however you need it for the analysis
+                    chat_history = [f"{chat.sender}: {chat.message}" for chat in chat_history]
+                    
+                    # Perform the consistency analysis
+                    consistency_analysis = build_consistency_analysis(chat_history)
+                    print("consistency_analysis:",consistency_analysis)
+
+                generated_text = create_statement(employee_id, emotion, consistency_analysis, reference_link)
 
                 employee = Employee.objects.get(id=employee_id)
 
@@ -259,11 +278,14 @@ class EmployeeAdmin(admin.ModelAdmin):
                     employee=employee,
                     generated_text=generated_text,
                     emotion=emotion,
-                    status='draft'
+                    consistency_analysis_included=include_consistency,
+                    consistency_analysis=consistency_analysis,
+                    ai_reference_link=reference_link,
+                    status='draft',
                 )
 
                 messages.success(request, 'Statement of Facts generated successfully.')
-                return redirect(f'/admin/employee/employee/{employee_id}/change/#cases-tab')
+                return redirect(f'/admin/employee/employee/{employee_id}/change/#statement-of-factss-tab')
         else:
             form = EmotionSelectionForm()
 
@@ -278,7 +300,10 @@ class EmployeeAdmin(admin.ModelAdmin):
 
 admin.site.register(Employee, EmployeeAdmin)
 
-def create_statement(employee_id, emotion):
+def create_statement(employee_id, emotion, consistency_analysis, reference_link):
+
+    # handle consistency_analysis and reference_link
+
     # Step 1: Retrieve all cases for the employee that are not closed
     cases = Case.objects.filter(employee_id=employee_id).exclude(report_status=Case.CLOSED)
     
@@ -294,6 +319,17 @@ def create_statement(employee_id, emotion):
         {"role": "system", "content": 'You are an AI model tasked with generating a "Statement of Facts" for a case involving an employee, with the goal of favoring the agency while still maintaining a fair, win-win tone where possible. The "Statement of Facts" should be clear, concise, and factual, summarizing the key details and events relevant to the case.'},
         {"role": "user", "content": f"Employee ID: {employee_id}\n\nCase Details:\n{case_info}\nEmotion:\n{emotion}"}
     ]
+    
+    if consistency_analysis:
+        messages.append(
+            {"role": "user", "content": f"Consistency Analysis Findings:\n{consistency_analysis}"}
+        )
+
+    # Step 5: Include reference link if provided
+    if reference_link:
+        messages.append(
+            {"role": "user", "content": f"Additional Information: Please refer to the following link for more details - {reference_link}"}
+        )
 
     try:
         completion = client.chat.completions.create(
@@ -303,3 +339,44 @@ def create_statement(employee_id, emotion):
         return completion.choices[0].message.content
     except Exception as e:
         return None
+
+def build_consistency_analysis(chat_history):
+    introduction = (
+        "Review the following conversation between the applicant and the agency. "
+        "Your task is to evaluate the consistency and truthfulness of the applicant's statements. "
+        "Consider the following aspects:\n\n"
+        "1. **Consistency**: Are the applicant's statements consistent with each other, or are there contradictions? "
+        "Do they align with previously provided information?\n"
+        "2. **Truthfulness**: Based on the tone, details, and context, does the applicant appear to be telling the truth? "
+        "Are there any signs of deception or exaggeration?\n"
+        "3. **Ambiguities or Concerns**: Are there any parts of the conversation that seem unclear, evasive, "
+        "or raise concerns about the applicant's credibility?\n\n"
+        "Provide a summary that includes:\n"
+        "- An overall assessment of the applicant's consistency.\n"
+        "- An indication of whether the applicant is likely telling the truth, possibly lying, "
+        "or if there are any red flags.\n"
+        "- Any specific instances or patterns that led to your judgment.\n\n"
+        "**Conversation:**"
+    )
+
+    print("introduction", introduction)
+    chat_history_string = "\n".join(chat_history)
+
+    # Build the array of messages (this is how you'd typically structure it for an API call)
+    messages = [
+        {"role": "system", "content": "You are an AI model that evaluates the consistency and truthfulness of text."},
+        {"role": "system", "content": introduction},
+        {"role": "user", "content": chat_history_string},
+    ]
+    print("messages", messages)
+
+    try:
+        print("try")
+        completion = client.chat.completions.create(
+            model="gpt-4o",
+            messages=messages,
+        )
+        print("completion", completion)
+        return completion.choices[0].message.content
+    except Exception as e:
+        return ""

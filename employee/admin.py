@@ -89,10 +89,13 @@ class CaseInline(admin.TabularInline):
 class StatementOfFactsInline(admin.TabularInline):
     model = StatementOfFacts
     extra = 0
-    readonly_fields = ('date_created', 'date_updated', 'status')
-    fields = ('generated_text', 'status', 'date_created', 'date_updated')
+    readonly_fields = ('date_created', 'date_updated', 'status', 'formatted_text')
+    fields = ('formatted_text', 'status', 'date_created', 'date_updated')
     can_delete = False
     show_change_link = False
+
+    def formatted_text(self, obj):
+        return obj.formatted_text()
 
     def has_add_permission(self, request, obj):
         return False

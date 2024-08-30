@@ -43,3 +43,4 @@ django-countries=7.6.1
 #pip install django-admin-rangefilter
 django-admin-rangefilter=0.13.1
 #pip install pandas openpyxl
+#pip install markdown

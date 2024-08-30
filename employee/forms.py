@@ -6,6 +6,9 @@ class EmotionSelectionForm(forms.Form):
         ('neutral', 'Neutral'),
         ('positive', 'Positive'),
         ('negative', 'Negative'),
-        # Add more emotions as needed
+        ('happy', 'Happy'),
+        ('sad', 'Sad'),
+        ('angry', 'Angry'),
+        ('apologetic', 'Apologetic'),
     ]
     emotion = forms.ChoiceField(choices=EMOTION_CHOICES, label="Select Emotion")

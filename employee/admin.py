@@ -91,10 +91,14 @@ class CaseInline(admin.TabularInline):
 class StatementOfFactsInline(admin.TabularInline):
     model = StatementOfFacts
     extra = 0
-    readonly_fields = ('date_created', 'date_updated', 'status', 'formatted_text')
-    fields = ('formatted_text', 'status', 'date_created', 'date_updated')
+    readonly_fields = ('date_created', 'date_updated', 'emotion', 'status', 'formatted_text')
+    fields = ('formatted_text', 'status', 'emotion', 'date_created')
     can_delete = False
     show_change_link = False
+
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        return qs.order_by('-date_created')
 
     def formatted_text(self, obj):
         return obj.formatted_text()
@@ -254,6 +258,7 @@ class EmployeeAdmin(admin.ModelAdmin):
                 StatementOfFacts.objects.create(
                     employee=employee,
                     generated_text=generated_text,
+                    emotion=emotion,
                     status='draft'
                 )
 
@@ -287,7 +292,7 @@ def create_statement(employee_id, emotion):
     # Step 3: Add the case information to the messages
     messages = [
         {"role": "system", "content": 'You are an AI model tasked with generating a "Statement of Facts" for a case involving an employee, with the goal of favoring the agency while still maintaining a fair, win-win tone where possible. The "Statement of Facts" should be clear, concise, and factual, summarizing the key details and events relevant to the case.'},
-        {"role": "user", "content": f"Employee ID: {employee_id}\n\nCase Details:\n{case_info}"}
+        {"role": "user", "content": f"Employee ID: {employee_id}\n\nCase Details:\n{case_info}\nEmotion:\n{emotion}"}
     ]
 
     try:

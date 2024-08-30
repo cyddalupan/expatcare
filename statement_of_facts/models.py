@@ -6,6 +6,7 @@ from django.utils.safestring import mark_safe
 class StatementOfFacts(models.Model):
     employee = models.ForeignKey(Employee, on_delete=models.CASCADE, related_name='statements_of_facts')
     generated_text = models.TextField()
+    emotion = models.CharField(max_length=50)
     date_created = models.DateTimeField(auto_now_add=True)
     date_updated = models.DateTimeField(auto_now=True)
     status = models.CharField(max_length=50, choices=[('draft', 'Draft'), ('finalized', 'Finalized')])

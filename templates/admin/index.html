@@ -44,6 +44,31 @@
         </div>
 
 
+        <h2>Monthly Summary</h2>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Month</th>
+                    <th>Total Deployed</th>
+                    <th>Complaints</th>
+                    <th>Hearings</th>
+                    <th>No Communication</th>
+                    <th>Arrived</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for month_summary in summary_data %}
+                    <tr>
+                        <td>{{ month_summary.month_name }}</td>
+                        <td>{{ month_summary.total_deployed }}</td>
+                        <td>{{ month_summary.complaints }}</td>
+                        <td>{{ month_summary.hearings }}</td>
+                        <td>{{ month_summary.no_communication }}</td>
+                        <td>{{ month_summary.arrived }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
         
         {% comment %} <div class="row">
             <div class="col-md-6 col-sm-12">

@@ -13,7 +13,6 @@
     </ol>
 {% endblock %}
 
-
 {% block content %}
     {% get_side_menu using="app_list" as dashboard_list %}
     {% if dashboard_list %}
@@ -21,14 +20,32 @@
     {% endif %}
 
     <div class="col-lg-9 col-12">
-        <div class="row">
-            <h1>HELLO WORLD</h1>
+        
 
-            <div class="custom-dashboard">
-                <h1>{{ custom_message }}</h1>
-            </div>
+
+        <div class="custom-dashboard">
+            <h1>{{ custom_message }}</h1>
+    
+            {% for status, cases in status_groups.items %}
+                <h2>{{ status|capfirst }}</h2>
+                <div class="row">
+                    {% for case in cases %}
+                        <div class="col-md-4">
+                            <div class="card text-white {{ case.color }} mb-3">
+                                <div class="card-header">{{ case.country_name }}</div>
+                                <div class="card-body">
+                                    <h5 class="card-title">{{ case.total }} Applicants</h5>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endfor %}
         </div>
-        <div class="row">
+
+
+        
+        {% comment %} <div class="row">
             <div class="col-md-6 col-sm-12">
                 {% for app in dashboard_list %}
                     <div class="card">
@@ -71,7 +88,7 @@
 
                 {% endfor %}
                 </div>
-        </div>
+        </div> {% endcomment %}
 
     </div>
     <div class="col-lg-3 col-12">

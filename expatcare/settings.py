@@ -71,6 +71,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'allauth.account.middleware.AccountMiddleware',
     'corsheaders.middleware.CorsMiddleware',
+    'expatcare.middleware.CustomAdminMiddleware',
 ]
 
 ROOT_URLCONF = 'expatcare.urls'

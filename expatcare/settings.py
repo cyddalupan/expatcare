@@ -234,20 +234,55 @@ JAZZMIN_SETTINGS = {
     "site_brand": "WelfarePH",
     "site_logo": "expatcare/logo.png",
 
-    # "custom_links": {
-    #     "employee": [
-    #         {
-    #             "name": "With Complaints",
-    #             "url": "/admin/employee/employee/?main_status__exact=with_complain&q=",
-    #             "icon": "fas fa-exclamation-triangle",
-    #             "permissions": ["employee.view_employee"],
-    #         },
-    #     ]
-    # },
+    "custom_links": {
+        "employee": [ 
+            {
+                "name": "With Complaints",
+                "url": "/admin/employee/employeewithcomplaints/",
+                "icon": "fas fa-exclamation-triangle", 
+                "permissions": ["employee.view_employee"],
+            },
+            {
+                "name": "With Hearings",
+                "url": "/admin/employee/employeewithhearings/",
+                "icon": "fas fa-gavel", 
+                "permissions": ["employee.view_employee"],
+            },
+            {
+                "name": "No Communication",
+                "url": "/admin/employee/employeenocommunication/",
+                "icon": "fas fa-bell-slash", 
+                "permissions": ["employee.view_employee"],
+            },
+            {
+                "name": "Closed Cases",
+                "url": "/admin/employee/employeeclosedcases/",
+                "icon": "fas fa-folder", 
+                "permissions": ["employee.view_employee"],
+            },
+            {
+                "name": "Arrived",
+                "url": "/admin/employee/employeearrived/",
+                "icon": "fas fa-plane-arrival", 
+                "permissions": ["employee.view_employee"],
+            },
+            {
+                "name": "Blacklisted",
+                "url": "/admin/employee/employeeblacklisted/",
+                "icon": "fas fa-ban", 
+                "permissions": ["employee.view_employee"],
+            }
+        ]
+    },
 
     "icons": {
-        "employee": "fas fa-users",  # Icon for the employee app
-        "employee.employee": "fas fa-user",  # Icon for the employee model
+        "employee.employee": "fas fa-user",
+        "employee.employeewithcomplaints": "fas fa-exclamation-triangle",
+        "employee.employeewithhearings": "fas fa-gavel",
+        "employee.employeenocommunication": "fas fa-bell-slash",
+        "employee.employeeclosedcases": "fas fa-folder",
+        "employee.employeearrived": "fas fa-plane-arrival",
+        "employee.employeeblacklisted": "fas fa-ban",
     },
 
     "related_modal_active": True,

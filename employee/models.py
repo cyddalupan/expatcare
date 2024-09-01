@@ -60,3 +60,33 @@ class EmployeeWithComplaints(Employee):
         proxy = True
         verbose_name = "Employee with Complaint"
         verbose_name_plural = "Employees with Complaints"
+
+class EmployeeWithHearings(Employee):
+    class Meta:
+        proxy = True
+        verbose_name = "Employee with Hearing"
+        verbose_name_plural = "Employees with Hearings"
+
+class EmployeeNoCommunication(Employee):
+    class Meta:
+        proxy = True
+        verbose_name = "Employee with No Communication"
+        verbose_name_plural = "Employees with No Communication"
+
+class EmployeeClosedCases(Employee):
+    class Meta:
+        proxy = True
+        verbose_name = "Employee with Closed Case"
+        verbose_name_plural = "Employees with Closed Cases"
+
+class EmployeeArrived(Employee):
+    class Meta:
+        proxy = True
+        verbose_name = "Employee Arrived"
+        verbose_name_plural = "Employees Arrived"
+
+class EmployeeBlacklisted(Employee):
+    class Meta:
+        proxy = True
+        verbose_name = "Blacklisted Employee"
+        verbose_name_plural = "Blacklisted Employees"

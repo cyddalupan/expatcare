@@ -13,7 +13,7 @@ from django.utils.html import format_html
 from django.contrib.admin import DateFieldListFilter
 
 # Local app imports
-from .models import Employee, EmployeeWithComplaints
+from .models import Employee, EmployeeArrived, EmployeeBlacklisted, EmployeeClosedCases, EmployeeNoCommunication, EmployeeWithComplaints, EmployeeWithHearings
 from .forms import EmotionSelectionForm
 from cases.models import Case
 from chats.models import Chat
@@ -270,10 +270,14 @@ class EmployeeAdmin(admin.ModelAdmin):
 
 admin.site.register(Employee, EmployeeAdmin)
 
-class EmployeeWithComplaintsAdmin(admin.ModelAdmin):
-    list_display = ('first_name', 'last_name', 'email', 'main_status')
-    search_fields = ('first_name', 'last_name', 'email', 'main_status')
-    list_filter = ('main_status',)
+class EmployeeWithComplaintsAdmin(EmployeeAdmin):
+    list_filter = (
+        ('date_deployment', DateFieldListFilter),
+        'date_of_birth',
+        'fra',
+        'applicant_type',
+        'country',
+    )
 
     def get_queryset(self, request):
         # Filter employees to only show those with complaints
@@ -281,3 +285,83 @@ class EmployeeWithComplaintsAdmin(admin.ModelAdmin):
         return queryset.filter(main_status='with_complain')
 
 admin.site.register(EmployeeWithComplaints, EmployeeWithComplaintsAdmin)
+
+class EmployeeWithHearingsAdmin(EmployeeAdmin):
+    list_filter = (
+        ('date_deployment', DateFieldListFilter),
+        'date_of_birth',
+        'fra',
+        'applicant_type',
+        'country',
+    )
+
+    def get_queryset(self, request):
+        queryset = super().get_queryset(request)
+        return queryset.filter(main_status='with_hearing')
+
+admin.site.register(EmployeeWithHearings, EmployeeWithHearingsAdmin)
+
+
+class EmployeeNoCommunicationAdmin(EmployeeAdmin):
+    list_filter = (
+        ('date_deployment', DateFieldListFilter),
+        'date_of_birth',
+        'fra',
+        'applicant_type',
+        'country',
+    )
+
+    def get_queryset(self, request):
+        queryset = super().get_queryset(request)
+        return queryset.filter(main_status='no_communication').exclude(main_status='arrive')
+
+admin.site.register(EmployeeNoCommunication, EmployeeNoCommunicationAdmin)
+
+
+class EmployeeClosedCasesAdmin(EmployeeAdmin):
+    list_filter = (
+        ('date_deployment', DateFieldListFilter),
+        'date_of_birth',
+        'fra',
+        'applicant_type',
+        'country',
+    )
+
+    def get_queryset(self, request):
+        queryset = super().get_queryset(request)
+        return queryset.filter(main_status='closed')
+
+admin.site.register(EmployeeClosedCases, EmployeeClosedCasesAdmin)
+
+
+class EmployeeArrivedAdmin(EmployeeAdmin):
+    list_filter = (
+        ('date_deployment', DateFieldListFilter),
+        'date_of_birth',
+        'fra',
+        'applicant_type',
+        'country',
+    )
+
+    def get_queryset(self, request):
+        queryset = super().get_queryset(request)
+        return queryset.filter(main_status='arrive')
+
+admin.site.register(EmployeeArrived, EmployeeArrivedAdmin)
+
+
+class EmployeeBlacklistedAdmin(EmployeeAdmin):
+    list_filter = (
+        ('date_deployment', DateFieldListFilter),
+        'date_of_birth',
+        'fra',
+        'applicant_type',
+        'country',
+    )
+
+    def get_queryset(self, request):
+        queryset = super().get_queryset(request)
+        return queryset.filter(main_status='blacklist')
+
+admin.site.register(EmployeeBlacklisted, EmployeeBlacklistedAdmin)
+

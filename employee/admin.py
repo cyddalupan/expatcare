@@ -21,13 +21,13 @@ load_dotenv()
 
 client = OpenAI()
 
-class ChatInline(admin.TabularInline):
-    model = Chat
-    fields = ('sender', 'message', 'timestamp')
-    readonly_fields = ('sender', 'message', 'timestamp')
+class BaseInline(admin.TabularInline):
     extra = 0
     can_delete = False
     show_change_link = False
+    ordering_field = 'timestamp'
+
+    readonly_fields = ('timestamp',)
 
     def has_add_permission(self, request, obj):
         return False
@@ -37,83 +37,41 @@ class ChatInline(admin.TabularInline):
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)
-        return qs.order_by('-timestamp')
+        return qs.order_by(f'-{self.ordering_field}')
 
-class CaseInline(admin.TabularInline):
+class ChatInline(BaseInline):
+    model = Chat
+    fields = ('sender', 'message', 'timestamp')
+    readonly_fields = ('sender', 'message', 'timestamp')
+
+    ordering_field = 'timestamp'
+
+class CaseInline(BaseInline):
     model = Case
     fields = ('case_link', 'category', 'date_reported', 'report_status', 'agency')
     readonly_fields = ('case_link', 'category', 'date_reported', 'report_status', 'agency')
-    extra = 0
-    can_delete = False
-    show_change_link = False
 
-    def has_add_permission(self, request, obj):
-        return False
-
-    def has_change_permission(self, request, obj=None):
-        return False
+    ordering_field = 'date_reported'
 
     def case_link(self, obj):
         link = reverse("admin:cases_case_change", args=[obj.id])  # admin:appname_modelname_change
         return format_html('<a href="{}">{}</a>', link, obj.category)
     case_link.short_description = 'Case'
 
-    def get_urls(self):
-        urls = super().get_urls()
-        custom_urls = [
-            path('export-cases/', self.admin_site.admin_view(self.export_cases), name='export_cases'),
-        ]
-        return custom_urls + urls
 
-    def export_cases(self, request):
-        # Get the list of cases for the selected employee
-        employee_id = request.GET.get('employee_id')
-        if not employee_id:
-            self.message_user(request, "No employee selected")
-            return HttpResponse(status=400)
-        
-        cases = Case.objects.filter(employee_id=employee_id)
-        data = []
-        for case in cases:
-            data.append({
-                'Category': case.category,
-                'Date Reported': case.date_reported,
-                'Report Status': case.report_status,
-                'Agency': case.agency.name if case.agency else None,
-            })
-
-        # Create a DataFrame and export to Excel
-        df = pd.DataFrame(data)
-        response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
-        response['Content-Disposition'] = 'attachment; filename="cases.xlsx"'
-        df.to_excel(response, index=False)
-        return response
-
-class StatementOfFactsInline(admin.TabularInline):
+class StatementOfFactsInline(BaseInline):
     model = StatementOfFacts
-    verbose_name = "Statement of Facts"
     verbose_name_plural = "Statements of Facts"
     extra = 0
-    readonly_fields = ('date_created', 'date_updated', 'ai_reference_link', 'emotion', 'status', 'formatted_text', 'formatted_analysis')
+    readonly_fields = ('formatted_text', 'formatted_analysis', 'date_created', 'date_updated')
     fields = ('formatted_text', 'formatted_analysis', 'ai_reference_link', 'status', 'emotion', 'date_created')
-    can_delete = False
-    show_change_link = False
-
-    def get_queryset(self, request):
-        qs = super().get_queryset(request)
-        return qs.order_by('-date_created')
+    ordering_field = 'date_created'
 
     def formatted_text(self, obj):
         return obj.formatted_text()
 
     def formatted_analysis(self, obj):
         return obj.formatted_analysis()
-
-    def has_add_permission(self, request, obj):
-        return False
-
-    def has_change_permission(self, request, obj=None):
-        return False
     
 class EmployeeAdmin(admin.ModelAdmin):
     list_display = (

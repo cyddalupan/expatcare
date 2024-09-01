@@ -54,3 +54,9 @@ class Employee(models.Model):
     class Meta:
         verbose_name = "Applicant"
         verbose_name_plural = "Applicants"
+
+class EmployeeWithComplaints(Employee):
+    class Meta:
+        proxy = True
+        verbose_name = "Employee with Complaint"
+        verbose_name_plural = "Employees with Complaints"

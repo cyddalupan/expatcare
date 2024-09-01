@@ -234,16 +234,16 @@ JAZZMIN_SETTINGS = {
     "site_brand": "WelfarePH",
     "site_logo": "expatcare/logo.png",
 
-    "custom_links": {
-        "employee": [ 
-            {
-                "name": "With Complaints",
-                "url": "/admin/employee/employee/?main_status__exact=with_complain&q=", 
-                "icon": "fas fa-exclamation-triangle", 
-                "permissions": ["employee.view_employee"],
-            }
-        ]
-    },
+    # "custom_links": {
+    #     "employee": [
+    #         {
+    #             "name": "With Complaints",
+    #             "url": "/admin/employee/employee/?main_status__exact=with_complain&q=",
+    #             "icon": "fas fa-exclamation-triangle",
+    #             "permissions": ["employee.view_employee"],
+    #         },
+    #     ]
+    # },
 
     "icons": {
         "employee": "fas fa-users",  # Icon for the employee app

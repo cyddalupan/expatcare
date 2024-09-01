@@ -10,7 +10,7 @@ from django.contrib import messages
 from django.shortcuts import redirect, render
 from django.template.response import TemplateResponse
 from django.urls import reverse
-from .models import Employee
+from .models import Employee, EmployeeWithComplaints
 from cases.models import Case
 from chats.models import Chat
 from statement_of_facts.models import StatementOfFacts
@@ -310,6 +310,18 @@ class EmployeeAdmin(admin.ModelAdmin):
         return TemplateResponse(request, "admin/emotion_selection_form.html", context)
 
 admin.site.register(Employee, EmployeeAdmin)
+
+class EmployeeWithComplaintsAdmin(admin.ModelAdmin):
+    list_display = ('first_name', 'last_name', 'email', 'main_status')
+    search_fields = ('first_name', 'last_name', 'email', 'main_status')
+    list_filter = ('main_status',)
+
+    def get_queryset(self, request):
+        # Filter employees to only show those with complaints
+        queryset = super().get_queryset(request)
+        return queryset.filter(main_status='with_complain')
+
+admin.site.register(EmployeeWithComplaints, EmployeeWithComplaintsAdmin)
 
 def create_statement(employee_id, emotion, consistency_analysis, reference_link):
 

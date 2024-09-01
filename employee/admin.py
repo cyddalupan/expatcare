@@ -158,23 +158,21 @@ class EmployeeAdmin(admin.ModelAdmin):
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)
-        if request.user.groups.filter(name='Agency').exists():
-            return qs.filter(agency=request.user)
-        return qs
+        return qs.filter(agency=request.user) if request.user.groups.filter(name='Agency').exists() else qs
+
 
     def save_model(self, request, obj, form, change):
-        if not change or not obj.agency:
-            obj.agency = request.user
+        obj.agency = obj.agency or request.user
         super().save_model(request, obj, form, change)
 
+
     def export_cases_link(self, obj):
-        url = reverse("admin:export_cases") + f"?employee_id={obj.id}"
+        url = f"{reverse('admin:export_cases')}?employee_id={obj.id}"
         return format_html('<a class="button" href="{}">Export Cases to Excel</a>', url)
     export_cases_link.short_description = "Export Cases"
 
     def generate_statement_link(self, obj):
-        url = reverse('admin:employee-generate-statement', args=[obj.pk])
-        return format_html('<a href="{}">Generate Statement of Facts</a>', url)
+        return format_html('<a href="{}">Generate Statement of Facts</a>', reverse('admin:employee-generate-statement', args=[obj.pk]))
     generate_statement_link.short_description = "Generate Statement of Facts"
 
     # Registering the custom export URL

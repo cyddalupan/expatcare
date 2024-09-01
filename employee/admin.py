@@ -223,8 +223,18 @@ class EmployeeAdmin(admin.ModelAdmin):
         custom_urls = [
             path('export-cases/', self.admin_site.admin_view(self.export_cases), name='export_cases'),
             path('generate-statement/<int:employee_id>/', self.admin_site.admin_view(self.generate_statement), name='employee-generate-statement'),
+            path('with-complaints/', self.admin_site.admin_view(self.with_complaints_view), name='employee-with-complaints'),
         ]
         return custom_urls + urls
+    
+    def with_complaints_view(self, request):
+        employees = Employee.objects.filter(main_status='with_complain')
+        context = dict(
+            self.admin_site.each_context(request),
+            title="Employees with Complaints",
+            employees=employees,
+        )
+        return render(request, 'admin/employee/with_complaints.html', context)
 
     def export_cases(self, request):
         employee_id = request.GET.get('employee_id')

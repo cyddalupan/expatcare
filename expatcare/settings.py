@@ -78,7 +78,7 @@ ROOT_URLCONF = 'expatcare.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'templates'],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -233,4 +233,22 @@ JAZZMIN_SETTINGS = {
     "site_header": "WelfarePH",
     "site_brand": "WelfarePH",
     "site_logo": "expatcare/logo.png",
+
+    "custom_links": {
+        "employee": [ 
+            {
+                "name": "With Complaints",
+                "url": "/admin/employee/employee/?main_status__exact=with_complain&q=", 
+                "icon": "fas fa-exclamation-triangle", 
+                "permissions": ["employee.view_employee"],
+            }
+        ]
+    },
+
+    "icons": {
+        "employee": "fas fa-users",  # Icon for the employee app
+        "employee.employee": "fas fa-user",  # Icon for the employee model
+    },
+
+    "related_modal_active": True,
 }

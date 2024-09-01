@@ -1,21 +1,23 @@
-from django.contrib import admin
-from django.http import HttpResponse
+# Standard library imports
+import pandas as pd
+
+# Third-party imports
 from dotenv import load_dotenv
 from openai import OpenAI
-from rangefilter.filters import DateRangeFilter
-from django.urls import path
-from django.utils.html import format_html
-import pandas as pd
-from django.contrib import messages
+from django.contrib import admin, messages
+from django.http import HttpResponse
 from django.shortcuts import redirect, render
 from django.template.response import TemplateResponse
-from django.urls import reverse
+from django.urls import path, reverse
+from django.utils.html import format_html
+from django.contrib.admin import DateFieldListFilter
+
+# Local app imports
 from .models import Employee, EmployeeWithComplaints
+from .forms import EmotionSelectionForm
 from cases.models import Case
 from chats.models import Chat
 from statement_of_facts.models import StatementOfFacts
-from .forms import EmotionSelectionForm
-from django.contrib.admin import DateFieldListFilter
 
 load_dotenv()
 
@@ -199,7 +201,7 @@ class EmployeeAdmin(admin.ModelAdmin):
         if not employee_id:
             self.message_user(request, "No employee selected")
             return HttpResponse(status=400)
-        
+
         # Fetching the cases related to the selected employee
         cases = Case.objects.filter(employee_id=employee_id)
         data = []

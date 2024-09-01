@@ -15,6 +15,7 @@ from cases.models import Case
 from chats.models import Chat
 from statement_of_facts.models import StatementOfFacts
 from .forms import EmotionSelectionForm
+from django.contrib.admin import DateFieldListFilter
 
 load_dotenv()
 
@@ -113,7 +114,7 @@ class StatementOfFactsInline(admin.TabularInline):
 
     def has_change_permission(self, request, obj=None):
         return False
-
+    
 class EmployeeAdmin(admin.ModelAdmin):
     list_display = (
         'first_name', 
@@ -152,7 +153,7 @@ class EmployeeAdmin(admin.ModelAdmin):
         'country',
     )
     list_filter = (
-        ('date_deployment', DateRangeFilter),
+        ('date_deployment', DateFieldListFilter),
         'date_of_birth',
         'fra',
         'main_status',

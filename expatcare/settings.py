@@ -276,6 +276,9 @@ JAZZMIN_SETTINGS = {
     },
 
     "icons": {
+        "cases.case": "fas fa-briefcase",
+        "fra.fra": "fas fa-building",
+        "statement_of_facts.statementoffacts": "fas fa-file-alt",
         "employee.employee": "fas fa-user",
         "employee.employeewithcomplaints": "fas fa-exclamation-triangle",
         "employee.employeewithhearings": "fas fa-gavel",

@@ -76,7 +76,8 @@
                 <tr>
                     <th>Employee</th>
                     <th>Category</th>
-                    <th>Report Date</th>
+                    <th>Stagnated</th>
+                    <th>Date Updated</th>
                     <th>Status</th>
                     <th>Agency</th>
                 </tr>
@@ -94,7 +95,8 @@
                     ">
                         <td>{{ case.employee.first_name }} {{ case.employee.last_name }}</td>
                         <td>{{ case.category }}</td>
-                        <td>{{ case.date_reported|date:"Y-m-d H:i" }}</td>
+                        <td>{{ case.delay_days }}</td>
+                        <td>{{ case.updated_date|date:"Y-m-d H:i" }}</td>
                         <td>{{ case.get_report_status_display }}</td>
                         <td>{{ case.agency.username }}</td>
                     </tr>

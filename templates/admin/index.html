@@ -69,6 +69,38 @@
                 {% endfor %}
             </tbody>
         </table>
+
+        <h2>Cases Stagnating for Over 7 Days</h2>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Employee</th>
+                    <th>Category</th>
+                    <th>Report Date</th>
+                    <th>Status</th>
+                    <th>Agency</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for case in stagnant_cases %}
+                    <tr style="
+                        {% if case.delay_days > 30 %}
+                            background-color: #ffcccc;
+                        {% elif case.delay_days > 14 %}
+                            background-color: #ffe066;
+                        {% elif case.delay_days > 7 %}
+                            background-color: #ffff99;
+                        {% endif %}
+                    ">
+                        <td>{{ case.employee.first_name }} {{ case.employee.last_name }}</td>
+                        <td>{{ case.category }}</td>
+                        <td>{{ case.date_reported|date:"Y-m-d H:i" }}</td>
+                        <td>{{ case.get_report_status_display }}</td>
+                        <td>{{ case.agency.username }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
         
         {% comment %} <div class="row">
             <div class="col-md-6 col-sm-12">

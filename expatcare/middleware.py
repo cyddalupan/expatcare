@@ -2,11 +2,11 @@
 
 from django.utils.deprecation import MiddlewareMixin
 from employee.models import Employee
+from cases.models import Case
 from django.db.models import Count, Q
+from django.utils import timezone
 import random
 from django_countries import countries
-from django.utils import timezone
-import calendar
 
 class CustomAdminMiddleware(MiddlewareMixin):
     def process_template_response(self, request, response):
@@ -43,10 +43,20 @@ class CustomAdminMiddleware(MiddlewareMixin):
                 arrived=Count('id', filter=Q(main_status='arrive'))
             ).order_by('date_deployment__month')
 
-            for data in summary_data:
-                data['month_name'] = calendar.month_name[data['date_deployment__month']]
+            # Case Stagnation: Find cases that haven't been updated in over 7 days
+            seven_days_ago = timezone.now() - timezone.timedelta(days=7)
+            stagnant_cases = Case.objects.filter(
+                date_reported__lt=seven_days_ago
+            ).exclude(
+                report_status=Case.CLOSED
+            ).order_by('-date_reported')
+
+            # Calculate the delay for each case
+            for case in stagnant_cases:
+                case.delay_days = (timezone.now() - case.date_reported).days
 
             # Add the custom data to the context
             response.context_data['status_groups'] = status_groups
             response.context_data['summary_data'] = summary_data
+            response.context_data['stagnant_cases'] = stagnant_cases
         return response

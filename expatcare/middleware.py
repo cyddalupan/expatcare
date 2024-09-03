@@ -46,14 +46,14 @@ class CustomAdminMiddleware(MiddlewareMixin):
             # Case Stagnation: Find cases that haven't been updated in over 7 days
             seven_days_ago = timezone.now() - timezone.timedelta(days=7)
             stagnant_cases = Case.objects.filter(
-                date_reported__lt=seven_days_ago
+                updated_date__lt=seven_days_ago
             ).exclude(
                 report_status=Case.CLOSED
-            ).order_by('-date_reported')
+            ).order_by('-updated_date')
 
             # Calculate the delay for each case
             for case in stagnant_cases:
-                case.delay_days = (timezone.now() - case.date_reported).days
+                case.delay_days = (timezone.now() - case.updated_date).days
 
             # Add the custom data to the context
             response.context_data['status_groups'] = status_groups

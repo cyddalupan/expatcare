@@ -51,8 +51,8 @@ class ChatInline(BaseInline):
 
 class CaseInline(BaseInline):
     model = Case
-    fields = ('case_link', 'category', 'date_reported', 'report_status', 'agency')
-    readonly_fields = ('case_link', 'category', 'date_reported', 'report_status', 'agency')
+    fields = ('case_link', 'category', 'updated_date', 'report_status', 'agency')
+    readonly_fields = ('case_link', 'category', 'updated_date', 'report_status', 'agency')
 
     ordering_field = 'date_reported'
 

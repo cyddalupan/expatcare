@@ -1,6 +1,9 @@
+# models.py
+
 from django.db import models
 from django.contrib.auth.models import User
-from employee.models import Employee 
+from employee.models import Employee
+from django.utils import timezone
 
 class Case(models.Model):
     OPEN = 'open'
@@ -21,6 +24,7 @@ class Case(models.Model):
     category = models.CharField(max_length=50)
     report = models.TextField() 
     date_reported = models.DateTimeField(auto_now_add=True)
+    updated_date = models.DateTimeField(auto_now=True)  # Automatically updates on save
     report_status = models.CharField(
         max_length=15,
         choices=STATUS_CHOICES,

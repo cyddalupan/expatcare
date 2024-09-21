@@ -70,7 +70,7 @@ class Report(APIView):
         general_instruction = get_setting('general_instruction', default='')
 
         messages = [
-            {"role": "system", "content": general_instruction + "Ask if they want updates on their previous case/report."},
+            {"role": "system", "content": general_instruction + "Ask if they want updates on their previous case/report. Talk in taglish. Use common words only. Keep reply short"},
         ]
         tools = [
             {

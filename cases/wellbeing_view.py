@@ -114,7 +114,7 @@ class Wellbeing(APIView):
         general_instruction = get_setting('general_instruction', default='')
 
         messages = [
-            {"role": "system", "content": general_instruction + (category.role or "")},
+            {"role": "system", "content": general_instruction + (category.role or "") + "Talk in taglish. Use common words only. Keep reply short"},
         ]
         
         tools = [

@@ -43,7 +43,7 @@ class Chat(APIView):
         general_instruction = get_setting('general_instruction', default='')
 
         messages = [
-            {"role": "system", "content": (general_instruction or "") + "Ensure the user is okay; if not, identify the problem category."},
+            {"role": "system", "content": (general_instruction or "") + "Ensure the user is okay; if not, identify the problem category. Talk in taglish. Use common words only. Keep reply short"},
         ]
         tools = [
             {

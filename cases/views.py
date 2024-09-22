@@ -10,6 +10,7 @@ from openai import OpenAI
 from advance.utils import get_setting
 from .json_functions import abort_json_function, get_category_json_function, log_case_json_function, save_memory_json_function, get_report_json_function
 from .functions import get_category, log_case, save_memory, get_report
+from .models import Case
 from chats.models import Chat as ChatModel
 from employee.models import Employee, EmployeeMemory
 from advance.models import AICategory
@@ -43,11 +44,11 @@ class Chat(APIView):
         category_names_list = list(category_names)
         latest_user_message = user_message[-1]['text'] if user_message else None
 
-        previous_cases = Case.objects.filter(employee=employee).order_by('-created_at')
-        case_messages = [{"role": "system", "content": f"Case {case.id}: {case.category} - Status: {case.status}"} for case in previous_cases]
+        previous_cases = Case.objects.filter(employee=employee).order_by('-date_reported')
+        case_messages = [{"role": "system", "content": f"Case and past experience: {case.category} - Status: {case.report_status}"} for case in previous_cases]
 
         memories = EmployeeMemory.objects.filter(employee=employee).order_by('-created_at')
-        memory_messages = [{"role": "system", "content": f"Memory: {memory.memory_content}"} for memory in memories]
+        memory_messages = [{"role": "system", "content": f"Memory: {memory.note}"} for memory in memories]
 
         # Save Last Message
         if latest_user_message:
@@ -125,6 +126,7 @@ class Chat(APIView):
                 if function_name == "save_memory":
                     memory_content = arguments_dict['memory_content']
                     save_memory(employee_id, memory_content)
+                    response_content = "Tatandaan ko to " + employee_name
 
             if response_content:
                 ChatModel.objects.create(

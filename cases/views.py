@@ -37,11 +37,15 @@ class Chat(APIView):
             return Response({'error': 'Employee ID and message are required.'}, status=status.HTTP_400_BAD_REQUEST)
 
         employee = Employee.objects.get(id=employee_id)
+        employee_name = f"{employee.first_name} {employee.last_name}" 
 
         category_names = AICategory.objects.values_list('category_name', flat=True)
         category_names_list = list(category_names)
         latest_user_message = user_message[-1]['text'] if user_message else None
-        
+
+        previous_cases = Case.objects.filter(employee=employee).order_by('-created_at')
+        case_messages = [{"role": "system", "content": f"Case {case.id}: {case.category} - Status: {case.status}"} for case in previous_cases]
+
         memories = EmployeeMemory.objects.filter(employee=employee).order_by('-created_at')
         memory_messages = [{"role": "system", "content": f"Memory: {memory.memory_content}"} for memory in memories]
 
@@ -58,8 +62,10 @@ class Chat(APIView):
 
         messages = [
             {"role": "system", "content": (general_instruction or "") + (categoryRole or "") + "Talk in taglish. Use common words only. Keep reply short"},
+            {"role": "system", "content": f"Employee Name: {employee_name}"},
         ]
         messages.extend(memory_messages)
+        messages.extend(case_messages) 
         tools = [
             save_memory_json_function,
             get_report_json_function,

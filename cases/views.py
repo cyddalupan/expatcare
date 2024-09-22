@@ -9,7 +9,7 @@ from dotenv import load_dotenv
 from openai import OpenAI
 from advance.utils import get_setting
 from .json_functions import abort_json_function, get_category_json_function, log_case_json_function, save_memory_json_function, get_report_json_function
-from .functions import get_category, log_case, save_memory
+from .functions import get_category, log_case, save_memory, get_report
 from chats.models import Chat as ChatModel
 from employee.models import Employee, EmployeeMemory
 from advance.models import AICategory
@@ -36,14 +36,14 @@ class Chat(APIView):
         if not employee_id or not user_message:
             return Response({'error': 'Employee ID and message are required.'}, status=status.HTTP_400_BAD_REQUEST)
 
+        employee = Employee.objects.get(id=employee_id)
+
         category_names = AICategory.objects.values_list('category_name', flat=True)
         category_names_list = list(category_names)
         latest_user_message = user_message[-1]['text'] if user_message else None
         
         memories = EmployeeMemory.objects.filter(employee=employee).order_by('-created_at')
         memory_messages = [{"role": "system", "content": f"Memory: {memory.memory_content}"} for memory in memories]
-        
-        employee = Employee.objects.get(id=employee_id)
 
         # Save Last Message
         if latest_user_message:
@@ -70,7 +70,7 @@ class Chat(APIView):
             tools.append(log_case_json_function(category))
             tools.append(abort_json_function(topic))
         else:
-            get_category_json_function(category_names_list),
+            tools.append(get_category_json_function(category_names_list)),
         print("tools after category", tools)
 
         for obj in user_message:
@@ -88,7 +88,7 @@ class Chat(APIView):
             print("completion", completion)
             response_content = completion.choices[0].message.content
             
-            tool_calls = completion.choices[0].message.get('tool_calls', None)
+            tool_calls = completion.choices[0].message.tool_calls
             print("tool_calls", tool_calls)
             if tool_calls:
                 function_name = tool_calls[0].function.name 
@@ -107,7 +107,7 @@ class Chat(APIView):
                         response_content = user_response
 
                 if function_name == "get_report":
-                    user_response = self.get_report(employee_id)
+                    user_response = get_report(employee_id)
                     response_content = user_response
                 
                 if function_name == "get_category":

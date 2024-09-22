@@ -40,7 +40,7 @@ save_memory_json_function = {
     "type": "function",
     "function": {
         "name": "save_memory",
-        "description": "Save a memory, note or personal information about an employee if it does not exist yet",
+        "description": "Save a memory, note or personal information about the user, if it does not exist yet",
         "parameters": {
             "type": "object",
             "properties": {

@@ -26,13 +26,11 @@ class Chat(APIView):
         user_message = request.data.get('message', None)
         topic = request.data.get('category', 'chat')
 
-        print("topic", topic)
         category = None
         categoryRole = None
         if topic != 'chat':
             category = get_object_or_404(AICategory, category_name=topic)
             categoryRole = category.role
-        print("category", category)
         
         if not employee_id or not user_message:
             return Response({'error': 'Employee ID and message are required.'}, status=status.HTTP_400_BAD_REQUEST)
@@ -72,38 +70,29 @@ class Chat(APIView):
             get_report_json_function,
         ]
 
-        print("tools before category", tools)
         if category:
             tools.append(log_case_json_function(category))
             tools.append(abort_json_function(topic))
         else:
             tools.append(get_category_json_function(category_names_list)),
-        print("tools after category", tools)
 
         for obj in user_message:
             sender = "user" if obj['sender'] != "AI" else "system"
             messages.append({"role": sender, "content": obj['text']})
 
-        print("b4 GPT messages", messages)
-        print("b4 GPT tools", tools)
         try:
             completion = client.chat.completions.create(
                 model="gpt-4o-mini",
                 messages=messages,
                 tools=tools,
             )
-            print("completion", completion)
             response_content = completion.choices[0].message.content
             
             tool_calls = completion.choices[0].message.tool_calls
-            print("tool_calls", tool_calls)
             if tool_calls:
                 function_name = tool_calls[0].function.name 
                 arguments = tool_calls[0].function.arguments 
                 arguments_dict = json.loads(arguments)
-                
-                print("function_name", function_name)
-                print("response_content", response_content)
                 
                 if function_name == "abort":
                     response_content = "systeminfo$:$chat$:$"+response_content

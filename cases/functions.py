@@ -72,7 +72,7 @@ def log_case(employee_id, category, arguments):
 
         if set(all_expected_params) <= set(provided_params):
             # All required parameters are present
-            return "systeminfo$:$report$:$" + (category.closing_message or "")
+            return "systeminfo$:$chat$:$" + (category.closing_message or "")
         else:
             # Not all required parameters are present
             return None

@@ -11,7 +11,7 @@ class Chat(models.Model):
         ('AI', 'AI'),
     ]
 
-    employee = models.ForeignKey(Employee, on_delete=models.CASCADE, related_name='chats')
+    employee = models.ForeignKey(Employee, on_delete=models.CASCADE, related_name='employee')
     agency = models.ForeignKey(User, on_delete=models.CASCADE, related_name='chats')
     message = models.TextField()
     sender = models.CharField(max_length=10, choices=SENDER_CHOICES)

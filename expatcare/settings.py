@@ -59,6 +59,7 @@ INSTALLED_APPS = [
     'chats',
     'fra',
     'statement_of_facts',
+    'support'
 ]
 
 MIDDLEWARE = [

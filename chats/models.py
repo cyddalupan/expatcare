@@ -15,6 +15,7 @@ class Chat(models.Model):
     agency = models.ForeignKey(User, on_delete=models.CASCADE, related_name='chats')
     message = models.TextField()
     sender = models.CharField(max_length=10, choices=SENDER_CHOICES)
+    is_support = models.BooleanField(default=False)
     timestamp = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

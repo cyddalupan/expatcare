@@ -147,6 +147,7 @@ class Wellbeing(APIView):
                     employee=employee,
                     agency=employee.agency,
                     message=latest_user_message,
+                    is_support=False,
                     sender='Employee'
                 )
 
@@ -187,6 +188,7 @@ class Wellbeing(APIView):
                     employee=employee,
                     agency=employee.agency,
                     message=response_content,
+                    is_support=False,
                     sender='AI'
                 )
 

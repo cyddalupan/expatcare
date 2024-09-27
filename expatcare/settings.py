@@ -236,6 +236,13 @@ JAZZMIN_SETTINGS = {
     "site_brand": "WelfarePH",
     "site_logo": "expatcare/logo.png",
 
+    "topmenu_links": [
+        {"name": "Dashboard", "url": "admin:index"},
+
+        {"app": "support", "label": "Support"},
+    ],
+    "order_with_respect_to": ["support", "cases", "fra", "statement_of_facts", "employee"],
+
     "custom_links": {
         "employee": [ 
             {
@@ -278,6 +285,7 @@ JAZZMIN_SETTINGS = {
     },
 
     "icons": {
+        "support.chatsupport": "fas fa-comments",
         "cases.case": "fas fa-briefcase",
         "fra.fra": "fas fa-building",
         "statement_of_facts.statementoffacts": "fas fa-file-alt",

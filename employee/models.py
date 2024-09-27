@@ -55,6 +55,19 @@ class Employee(models.Model):
         verbose_name = "Applicant"
         verbose_name_plural = "Applicants"
 
+class EmployeeMemory(models.Model):
+    employee = models.ForeignKey(Employee, on_delete=models.CASCADE, related_name='memories')
+    note = models.TextField() 
+    created_at = models.DateTimeField(auto_now_add=True) 
+
+    def __str__(self):
+        return f"Memory for {self.employee.first_name} {self.employee.last_name} on {self.created_at.strftime('%Y-%m-%d')}"
+
+    class Meta:
+        verbose_name = "Employee Memory"
+        verbose_name_plural = "Employee Memories"
+        ordering = ['-created_at'] 
+
 class EmployeeWithComplaints(Employee):
     class Meta:
         proxy = True

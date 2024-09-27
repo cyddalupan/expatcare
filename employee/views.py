@@ -31,7 +31,7 @@ class Chat(APIView):
         usermessage = request.data.get('message', None)
 
         messages = [
-            {"role": "system", "content": "Your goal is to get the passport number and last name of the user to confirm the identity so you can help. You are comforting to talk to. Speak in tagalog if user is using tagalog. Keep reply short if posible"},
+            {"role": "system", "content": "Your goal is to get the passport number and last name of the user to confirm the identity so you can help. You are comforting to talk to. Talk in taglish. Use common words only. Keep reply short"},
         ]
         tools = [
             {

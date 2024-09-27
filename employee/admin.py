@@ -13,7 +13,7 @@ from django.utils.html import format_html
 from django.contrib.admin import DateFieldListFilter
 
 # Local app imports
-from .models import Employee, EmployeeArrived, EmployeeBlacklisted, EmployeeClosedCases, EmployeeNoCommunication, EmployeeWithComplaints, EmployeeWithHearings
+from .models import Employee, EmployeeMemory, EmployeeArrived, EmployeeBlacklisted, EmployeeClosedCases, EmployeeNoCommunication, EmployeeWithComplaints, EmployeeWithHearings
 from .forms import EmotionSelectionForm
 from cases.models import Case
 from chats.models import Chat
@@ -75,7 +75,18 @@ class StatementOfFactsInline(BaseInline):
 
     def formatted_analysis(self, obj):
         return obj.formatted_analysis()
-    
+
+class EmployeeMemoryInline(admin.TabularInline):
+    model = EmployeeMemory
+    extra = 1
+    fields = ('note', 'created_at')
+    readonly_fields = ('created_at',)
+    ordering = ('-created_at',)  # Order memories by the most recent first
+
+    def has_add_permission(self, request, obj):
+        # Only allow adding memories when viewing an employee
+        return True if obj else False
+
 class EmployeeAdmin(admin.ModelAdmin):
     list_display = (
         'first_name', 
@@ -150,7 +161,7 @@ class EmployeeAdmin(admin.ModelAdmin):
             )
         }),
     )
-    inlines = [CaseInline, ChatInline, StatementOfFactsInline]
+    inlines = [CaseInline, ChatInline, StatementOfFactsInline, EmployeeMemoryInline]
 
     def agency_name(self, obj):
         return obj.agency.username 

@@ -62,6 +62,14 @@ get_report_json_function = {
     },
 }
 
+get_support_json_function = {
+    "type": "function",
+    "function": {
+        "name": "get_support",
+        "description": "trigger get_support function if you dont know what to say or the user message seems urgent or an emergency",
+    },
+}
+
 def abort_json_function(topic):
     return {
         "type": "function",

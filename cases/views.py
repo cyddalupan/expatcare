@@ -8,9 +8,10 @@ from django.http import JsonResponse
 from dotenv import load_dotenv
 from openai import OpenAI
 from advance.utils import get_setting
-from .json_functions import abort_json_function, get_category_json_function, log_case_json_function, save_memory_json_function, get_report_json_function
+from .json_functions import abort_json_function, get_category_json_function, log_case_json_function, save_memory_json_function, get_report_json_function, get_support_json_function
 from .functions import get_category, log_case, save_memory, get_report
 from .models import Case
+from support.models import ChatSupport
 from chats.models import Chat as ChatModel
 from employee.models import Employee, EmployeeMemory
 from advance.models import AICategory
@@ -67,6 +68,7 @@ class Chat(APIView):
         messages.extend(memory_messages)
         messages.extend(case_messages) 
         tools = [
+            get_support_json_function,
             save_memory_json_function,
             get_report_json_function,
         ]
@@ -88,6 +90,7 @@ class Chat(APIView):
                 tools=tools,
             )
             response_content = completion.choices[0].message.content
+            print("#####", completion)
             
             tool_calls = completion.choices[0].message.tool_calls
             if tool_calls:
@@ -95,6 +98,16 @@ class Chat(APIView):
                 arguments = tool_calls[0].function.arguments 
                 arguments_dict = json.loads(arguments)
                 
+                if function_name == "get_support":
+                    ChatSupport.objects.create(
+                        employee=employee,
+                        last_message=latest_user_message,
+                        is_open=True
+                    )
+                    employee.is_support = True
+                    employee.save()
+                    response_content = "systeminfo$:$support$:$Please Wait"
+
                 if function_name == "abort":
                     response_content = "systeminfo$:$chat$:$"+response_content
                 

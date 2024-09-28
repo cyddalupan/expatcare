@@ -53,6 +53,8 @@ INSTALLED_APPS = [
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
+    'crispy_forms',
+    'crispy_bootstrap4',
     'advance',
     'employee',
     'cases',
@@ -300,3 +302,5 @@ JAZZMIN_SETTINGS = {
 
     "related_modal_active": True,
 }
+
+CRISPY_TEMPLATE_PACK = 'bootstrap4'

@@ -5,7 +5,7 @@ from .models import ChatSupport
 from chats.models import Chat
 
 class ChatReplyForm(forms.Form):
-    new_message = forms.CharField(widget=forms.Textarea(attrs={"rows": 4, "cols": 80}), required=True)
+    new_message = forms.CharField(widget=forms.Textarea(attrs={"rows": 4, "cols": 80}), required=False)
 
 class ChatSupportAdmin(admin.ModelAdmin):
     list_display = ('employee', 'last_message', 'is_open', 'created_date')
@@ -20,19 +20,27 @@ class ChatSupportAdmin(admin.ModelAdmin):
         related_chats = Chat.objects.filter(employee=obj.employee)
         extra_context['related_chats'] = related_chats
 
-        # Handle the reply form submission
+        # Handle form submissions
         if request.method == "POST":
-            form = ChatReplyForm(request.POST)
-            if form.is_valid():
-                new_message = form.cleaned_data['new_message']
-                Chat.objects.create(
-                    employee=obj.employee,
-                    agency=request.user,  # Assuming the current user is the agency representative
-                    message=new_message,
-                    sender='Support',  # Assuming the sender is "Support"
-                    is_support=True
-                )
-                return redirect(request.path)  # Redirect back to the same page to refresh
+            if 'send_reply' in request.POST:
+                form = ChatReplyForm(request.POST)
+                if form.is_valid():
+                    new_message = form.cleaned_data['new_message']
+                    if new_message:
+                        Chat.objects.create(
+                            employee=obj.employee,
+                            agency=obj.employee.agency,
+                            message=new_message,
+                            sender='AI',
+                            is_support=True
+                        )
+                    return redirect(request.path)
+
+            elif 'close_ticket' in request.POST:
+                # Handle closing the ticket
+                obj.is_open = False
+                obj.save()
+                return redirect(request.path)
 
         else:
             form = ChatReplyForm()

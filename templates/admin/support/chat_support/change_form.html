@@ -2,24 +2,30 @@
 
 {% load crispy_forms_tags %}
 
-
 {% block content %}
     <div class="container-fluid">
         <h1>Chat History for {{ original }}</h1>
 
         <!-- Reply Form at the Top -->
-        <div class="card mt-4 mb-4">
-            <div class="card-header bg-primary text-white">
-                <h4>Reply</h4>
+        {% if original.is_open %}
+            <div class="card mt-4 mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h4>Reply</h4>
+                </div>
+                <div class="card-body">
+                    <form method="post" action="">
+                        {% csrf_token %}
+                        {{ form|crispy }}
+                        <input type="submit" name="send_reply" value="Send Reply" class="btn btn-success">
+                        <input type="submit" name="close_ticket" value="Close Ticket" class="btn btn-danger">
+                    </form>
+                </div>
             </div>
-            <div class="card-body">
-                <form method="post" action="">
-                    {% csrf_token %}
-                    {{ form|crispy }}
-                    <input type="submit" value="Send Reply" class="btn btn-success">
-                </form>
+        {% else %}
+            <div class="alert alert-warning mt-4">
+                <strong>Ticket Closed:</strong> This ticket has been closed and cannot accept new replies.
             </div>
-        </div>
+        {% endif %}
 
         <!-- Chat History Table -->
         {% if related_chats %}

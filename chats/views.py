@@ -1,6 +1,8 @@
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status
+
+from support.models import ChatSupport
 from .models import Chat
 from employee.models import Employee
 from django.shortcuts import get_object_or_404
@@ -31,13 +33,20 @@ class CheckLastReplyView(APIView):
     def get(self, request, employee_id):
         # Fetch the employee based on the provided ID
         employee = get_object_or_404(Employee, id=employee_id)
-        
+
+        # Get the latest chat support instance for this employee
+        last_chat_support = ChatSupport.objects.filter(employee=employee).order_by('-created_date').first()
+
+        # Check if there is a support chat and if it's closed
+        if last_chat_support and not last_chat_support.is_open:
+            return Response({'has_reply': True}, status=status.HTTP_200_OK)
+
         # Get the latest chat message for this employee
         last_chat = Chat.objects.filter(employee=employee).order_by('-timestamp').first()
-        
-        # Check if there is a message and if the last sender is not the employee
-        if last_chat and last_chat.sender != 'Employee':
+
+        # Check if there is a message and if the last sender is support
+        if last_chat and last_chat.is_support:
             return Response({'has_reply': True}, status=status.HTTP_200_OK)
-        
+
         # Otherwise, return false
         return Response({'has_reply': False}, status=status.HTTP_200_OK)

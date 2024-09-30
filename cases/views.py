@@ -57,7 +57,7 @@ class Chat(APIView):
             )
 
         if topic == 'support':
-            return Response(status=status.HTTP_200_OK)
+            return Response({'response': "systeminfo$:$support$:$Please wait..."}, status=status.HTTP_200_OK)
 
         if topic != 'chat':
             category = get_object_or_404(AICategory, category_name=topic)

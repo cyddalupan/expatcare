@@ -26,3 +26,18 @@ class ChatHistoryView(APIView):
 
         # Return the chat data in the response
         return Response({'chat_history': chat_data}, status=status.HTTP_200_OK)
+
+class CheckLastReplyView(APIView):
+    def get(self, request, employee_id):
+        # Fetch the employee based on the provided ID
+        employee = get_object_or_404(Employee, id=employee_id)
+        
+        # Get the latest chat message for this employee
+        last_chat = Chat.objects.filter(employee=employee).order_by('-timestamp').first()
+        
+        # Check if there is a message and if the last sender is not the employee
+        if last_chat and last_chat.sender != 'Employee':
+            return Response({'has_reply': True}, status=status.HTTP_200_OK)
+        
+        # Otherwise, return false
+        return Response({'has_reply': False}, status=status.HTTP_200_OK)

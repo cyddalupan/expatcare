@@ -39,14 +39,14 @@ class CheckLastReplyView(APIView):
 
         # Check if there is a support chat and if it's closed
         if last_chat_support and not last_chat_support.is_open:
-            return Response({'has_reply': True}, status=status.HTTP_200_OK)
+            return Response({'response': 'closed'}, status=status.HTTP_200_OK)
 
         # Get the latest chat message for this employee
         last_chat = Chat.objects.filter(employee=employee).order_by('-timestamp').first()
 
         # Check if there is a message and if the last sender is support
         if last_chat and last_chat.is_support:
-            return Response({'has_reply': True}, status=status.HTTP_200_OK)
+            return Response({'response': 'reply'}, status=status.HTTP_200_OK)
 
         # Otherwise, return false
-        return Response({'has_reply': False}, status=status.HTTP_200_OK)
+        return Response({'response': 'none'}, status=status.HTTP_200_OK)

@@ -29,9 +29,6 @@ class Chat(APIView):
 
         category = None
         categoryRole = None
-        if topic != 'chat':
-            category = get_object_or_404(AICategory, category_name=topic)
-            categoryRole = category.role
         
         if not employee_id or not user_message:
             return Response({'error': 'Employee ID and message are required.'}, status=status.HTTP_400_BAD_REQUEST)
@@ -58,6 +55,13 @@ class Chat(APIView):
                 sender='Employee',
                 is_support=False
             )
+
+        if topic == 'support':
+            return Response(status=status.HTTP_200_OK)
+
+        if topic != 'chat':
+            category = get_object_or_404(AICategory, category_name=topic)
+            categoryRole = category.role
 
         general_instruction = get_setting('general_instruction', default='')
 

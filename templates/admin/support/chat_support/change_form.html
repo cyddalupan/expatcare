@@ -6,6 +6,11 @@
     <div class="container-fluid">
         <h1>Chat History for {{ original }}</h1>
 
+        <!-- Countdown Timer Display -->
+        <div id="refresh-timer" class="alert alert-info mb-4">
+            Page will auto-refresh in <span id="countdown">15</span> seconds.
+        </div>
+
         <!-- Reply Form at the Top -->
         {% if original.is_open %}
             <div class="card mt-4 mb-4">
@@ -58,4 +63,22 @@
             <p>No related chats found.</p>
         {% endif %}
     </div>
+
+    <!-- JavaScript for Auto-Refresh and Countdown Timer -->
+    <script type="text/javascript">
+        let countdown = 15;
+
+        function updateCountdown() {
+            document.getElementById('countdown').innerText = countdown;
+            if (countdown === 0) {
+                // Refresh the page
+                location.reload();
+            } else {
+                countdown--;
+            }
+        }
+
+        // Set interval to update countdown every second
+        setInterval(updateCountdown, 1000);
+    </script>
 {% endblock %}

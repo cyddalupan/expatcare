@@ -110,7 +110,7 @@ class Chat(APIView):
                     )
                     employee.is_support = True
                     employee.save()
-                    response_content = "systeminfo$:$support$:$Please Wait"
+                    response_content = "systeminfo$:$support$:$Please Wait..."
 
                 if function_name == "abort":
                     response_content = "systeminfo$:$chat$:$"+response_content
@@ -152,6 +152,7 @@ class Chat(APIView):
 class Saklolo(APIView):
     def post(self, request):
         employee_id = request.data.get('employee_id', None)
+        initial_reply = "systeminfo$:$support$:$Please Wait..."
 
         if not employee_id:
             return Response({'error': 'Employee ID required.'}, status=status.HTTP_400_BAD_REQUEST)
@@ -162,6 +163,14 @@ class Saklolo(APIView):
             last_message="SAKLOLO",
             is_open=True
         )
+        ChatModel.objects.create(
+            employee=employee,
+            agency=employee.agency,
+            message=initial_reply,
+            sender='AI',
+            is_support=True
+        )
+
         employee.is_support = True
         employee.save()
-        return Response({'response': "systeminfo$:$support$:$Please Wait"}, status=status.HTTP_200_OK)
+        return Response({'response': initial_reply}, status=status.HTTP_200_OK)

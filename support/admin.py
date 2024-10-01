@@ -40,6 +40,13 @@ class ChatSupportAdmin(admin.ModelAdmin):
                 # Handle closing the ticket
                 obj.is_open = False
                 obj.save()
+                Chat.objects.create(
+                    employee=obj.employee,
+                    agency=obj.employee.agency,
+                    message="systeminfo$:$chat$:$Salamat, Mag sabi ka lang ulit kung magkaron ka ng problema.",
+                    sender='AI',
+                    is_support=True
+                )
                 return redirect(request.path)
 
         else:

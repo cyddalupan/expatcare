@@ -148,3 +148,20 @@ class Chat(APIView):
         except Exception as e:
             traceback.print_exc()
             return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+class Saklolo(APIView):
+    def post(self, request):
+        employee_id = request.data.get('employee_id', None)
+
+        if not employee_id:
+            return Response({'error': 'Employee ID required.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        employee = Employee.objects.get(id=employee_id)
+        ChatSupport.objects.create(
+            employee=employee,
+            last_message="SAKLOLO",
+            is_open=True
+        )
+        employee.is_support = True
+        employee.save()
+        return Response({'response': "systeminfo$:$support$:$Please Wait"}, status=status.HTTP_200_OK)

@@ -240,51 +240,50 @@ JAZZMIN_SETTINGS = {
 
     "topmenu_links": [
         {"name": "Dashboard", "url": "admin:index"},
-
         {"app": "support", "label": "Support"},
     ],
     "order_with_respect_to": ["support", "cases", "fra", "statement_of_facts", "employee"],
 
-    "custom_links": {
-        "employee": [ 
-            {
-                "name": "With Complaints",
-                "url": "/admin/employee/employeewithcomplaints/",
-                "icon": "fas fa-exclamation-triangle", 
-                "permissions": ["employee.view_employee"],
-            },
-            {
-                "name": "With Hearings",
-                "url": "/admin/employee/employeewithhearings/",
-                "icon": "fas fa-gavel", 
-                "permissions": ["employee.view_employee"],
-            },
-            {
-                "name": "No Communication",
-                "url": "/admin/employee/employeenocommunication/",
-                "icon": "fas fa-bell-slash", 
-                "permissions": ["employee.view_employee"],
-            },
-            {
-                "name": "Closed Cases",
-                "url": "/admin/employee/employeeclosedcases/",
-                "icon": "fas fa-folder", 
-                "permissions": ["employee.view_employee"],
-            },
-            {
-                "name": "Arrived",
-                "url": "/admin/employee/employeearrived/",
-                "icon": "fas fa-plane-arrival", 
-                "permissions": ["employee.view_employee"],
-            },
-            {
-                "name": "Blacklisted",
-                "url": "/admin/employee/employeeblacklisted/",
-                "icon": "fas fa-ban", 
-                "permissions": ["employee.view_employee"],
-            }
-        ]
-    },
+    # "custom_links": {
+    #     "employee": [ 
+    #         {
+    #             "name": "Employees With Complaints",
+    #             "url": "/admin/employee/employeewithcomplaints/",
+    #             "icon": "fas fa-exclamation-triangle", 
+    #             "permissions": ["employee.view_employee"],
+    #         },
+    #         {
+    #             "name": "Employees With Hearings",
+    #             "url": "/admin/employee/employeewithhearings/",
+    #             "icon": "fas fa-gavel", 
+    #             "permissions": ["employee.view_employee"],
+    #         },
+    #         {
+    #             "name": "Employees With No Communication",
+    #             "url": "/admin/employee/employeenocommunication/",
+    #             "icon": "fas fa-bell-slash", 
+    #             "permissions": ["employee.view_employee"],
+    #         },
+    #         {
+    #             "name": "Employees With Closed Cases",
+    #             "url": "/admin/employee/employeeclosedcases/",
+    #             "icon": "fas fa-folder", 
+    #             "permissions": ["employee.view_employee"],
+    #         },
+    #         {
+    #             "name": "Employees Arrived",
+    #             "url": "/admin/employee/employeearrived/",
+    #             "icon": "fas fa-plane-arrival", 
+    #             "permissions": ["employee.view_employee"],
+    #         },
+    #         {
+    #             "name": "Employees Blacklisted",
+    #             "url": "/admin/employee/employeeblacklisted/",
+    #             "icon": "fas fa-ban", 
+    #             "permissions": ["employee.view_employee"],
+    #         }
+    #     ]
+    # },
 
     "icons": {
         "support.chatsupport": "fas fa-comments",

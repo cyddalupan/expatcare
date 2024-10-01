@@ -280,7 +280,6 @@ class EmployeeAdmin(admin.ModelAdmin):
         return TemplateResponse(request, "admin/emotion_selection_form.html", context)
 
 admin.site.register(Employee, EmployeeAdmin)
-
 class EmployeeWithComplaintsAdmin(EmployeeAdmin):
     list_filter = (
         ('date_deployment', DateFieldListFilter),
@@ -295,7 +294,12 @@ class EmployeeWithComplaintsAdmin(EmployeeAdmin):
         queryset = super().get_queryset(request)
         return queryset.filter(main_status='with_complain')
 
+    # Ensure a unique verbose name and plural name
+    verbose_name = "Employee with Complaint"
+    verbose_name_plural = "Employees with Complaints"
+
 admin.site.register(EmployeeWithComplaints, EmployeeWithComplaintsAdmin)
+
 
 class EmployeeWithHearingsAdmin(EmployeeAdmin):
     list_filter = (
@@ -309,6 +313,10 @@ class EmployeeWithHearingsAdmin(EmployeeAdmin):
     def get_queryset(self, request):
         queryset = super().get_queryset(request)
         return queryset.filter(main_status='with_hearing')
+
+    # Ensure a unique verbose name and plural name
+    verbose_name = "Employee with Hearing"
+    verbose_name_plural = "Employees with Hearings"
 
 admin.site.register(EmployeeWithHearings, EmployeeWithHearingsAdmin)
 
@@ -326,6 +334,10 @@ class EmployeeNoCommunicationAdmin(EmployeeAdmin):
         queryset = super().get_queryset(request)
         return queryset.filter(main_status='no_communication').exclude(main_status='arrive')
 
+    # Ensure a unique verbose name and plural name
+    verbose_name = "Employee with No Communication"
+    verbose_name_plural = "Employees with No Communication"
+
 admin.site.register(EmployeeNoCommunication, EmployeeNoCommunicationAdmin)
 
 
@@ -341,6 +353,10 @@ class EmployeeClosedCasesAdmin(EmployeeAdmin):
     def get_queryset(self, request):
         queryset = super().get_queryset(request)
         return queryset.filter(main_status='closed')
+
+    # Ensure a unique verbose name and plural name
+    verbose_name = "Employee with Closed Case"
+    verbose_name_plural = "Employees with Closed Cases"
 
 admin.site.register(EmployeeClosedCases, EmployeeClosedCasesAdmin)
 
@@ -358,6 +374,10 @@ class EmployeeArrivedAdmin(EmployeeAdmin):
         queryset = super().get_queryset(request)
         return queryset.filter(main_status='arrive')
 
+    # Ensure a unique verbose name and plural name
+    verbose_name = "Employee Arrived"
+    verbose_name_plural = "Employees Arrived"
+
 admin.site.register(EmployeeArrived, EmployeeArrivedAdmin)
 
 
@@ -374,5 +394,8 @@ class EmployeeBlacklistedAdmin(EmployeeAdmin):
         queryset = super().get_queryset(request)
         return queryset.filter(main_status='blacklist')
 
-admin.site.register(EmployeeBlacklisted, EmployeeBlacklistedAdmin)
+    # Ensure a unique verbose name and plural name
+    verbose_name = "Blacklisted Employee"
+    verbose_name_plural = "Blacklisted Employees"
 
+admin.site.register(EmployeeBlacklisted, EmployeeBlacklistedAdmin)

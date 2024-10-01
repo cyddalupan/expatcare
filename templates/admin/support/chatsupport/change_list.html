@@ -1,0 +1,33 @@
+{% extends "admin/change_list.html" %}
+
+{% block content %}
+    <div class="container-fluid">
+        <h1>Support Tickets</h1>
+
+        <!-- Countdown Timer Display -->
+        <div id="refresh-timer" class="alert alert-info mb-4">
+            Page will auto-refresh in <span id="countdown">15</span> seconds.
+        </div>
+
+        {{ block.super }}  <!-- This includes the default change list content (the table of tickets) -->
+
+    </div>
+
+    <!-- JavaScript for Auto-Refresh and Countdown Timer -->
+    <script type="text/javascript">
+        let countdown = 15;
+
+        function updateCountdown() {
+            document.getElementById('countdown').innerText = countdown;
+            if (countdown === 0) {
+                // Refresh the page
+                location.reload();
+            } else {
+                countdown--;
+            }
+        }
+
+        // Set interval to update countdown every second
+        setInterval(updateCountdown, 1000);
+    </script>
+{% endblock %}

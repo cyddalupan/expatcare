@@ -49,17 +49,21 @@ class ChatInline(BaseInline):
 
     ordering_field = 'timestamp'
 
-class CaseInline(BaseInline):
+class CaseInline(admin.TabularInline):  # Or use admin.StackedInline if you want a different display style
     model = Case
-    fields = ('case_link', 'category', 'updated_date', 'report_status', 'agency')
-    readonly_fields = ('case_link', 'category', 'updated_date', 'report_status', 'agency')
-
-    ordering_field = 'date_reported'
+    fields = ('case_link', 'category', 'updated_date', 'report_status', 'agency', 'last_comment')
+    readonly_fields = ('case_link', 'category', 'updated_date', 'report_status', 'agency', 'last_comment')
+    ordering = ('date_reported',) 
 
     def case_link(self, obj):
         link = reverse("admin:cases_case_change", args=[obj.id])  # admin:appname_modelname_change
         return format_html('<a href="{}">{}</a>', link, obj.category)
     case_link.short_description = 'Case'
+
+    def last_comment(self, obj):
+        last_comment = obj.comments.order_by('-created_date').first()  # Get the most recent comment
+        return last_comment.text if last_comment else "No comments yet"
+    last_comment.short_description = "Last Comment"
 
 
 class StatementOfFactsInline(BaseInline):

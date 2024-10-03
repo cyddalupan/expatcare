@@ -34,3 +34,12 @@ class Case(models.Model):
 
     def __str__(self):
         return f"{self.category} - {self.employee.first_name} {self.employee.last_name} ({self.get_report_status_display()})"
+
+class CaseComment(models.Model):
+    case = models.ForeignKey('Case', on_delete=models.CASCADE, related_name='comments')
+    author = models.ForeignKey(User, on_delete=models.CASCADE)
+    text = models.TextField()
+    created_date = models.DateTimeField(default=timezone.now)
+
+    def __str__(self):
+        return f"Comment by {self.author.username} on {self.case.category}"

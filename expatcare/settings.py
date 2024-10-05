@@ -13,6 +13,8 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 import os
 from pathlib import Path
 from dotenv import load_dotenv
+import firebase_admin
+from firebase_admin import credentials
 
 load_dotenv()
 
@@ -303,3 +305,9 @@ JAZZMIN_SETTINGS = {
 }
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
+
+# Path to your Firebase service account key
+cred = credentials.Certificate("firebase/serviceAccountKey.json")
+
+# Initialize the Firebase Admin SDK
+firebase_admin.initialize_app(cred)

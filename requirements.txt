@@ -46,3 +46,4 @@ django-admin-rangefilter=0.13.1
 #pip install markdown
 #pip install django-crispy-forms
 #pip install crispy-bootstrap4
+#pip install firebase-admin

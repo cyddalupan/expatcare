@@ -13,6 +13,7 @@ class Employee(models.Model):
     phone_number = models.CharField(max_length=20)
     email = models.EmailField()
     is_support = models.BooleanField(default=False)
+    token = models.CharField(max_length=255)
     
     date_deployment = models.DateField(null=True, blank=True)  # Date Deployment
     fra = models.ForeignKey(FRA, on_delete=models.SET_NULL, null=True, blank=True)  # Foreign Recruitment Agency

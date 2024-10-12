@@ -30,9 +30,12 @@ class ChatHistoryView(APIView):
         return Response({'chat_history': chat_data}, status=status.HTTP_200_OK)
 
 class CheckLastReplyView(APIView):
-    def get(self, request, employee_id):
+    def get(self, request, employee_id, token):
         # Fetch the employee based on the provided ID
         employee = get_object_or_404(Employee, id=employee_id)
+        # Save token
+        employee.token = token
+        employee.save()
 
         # Get the latest chat support instance for this employee
         last_chat_support = ChatSupport.objects.filter(employee=employee).order_by('-created_date').first()

@@ -11,9 +11,10 @@ class ChatHistoryView(APIView):
     def get(self, request, employee_id, token):
         # Fetch the employee based on the provided ID
         employee = get_object_or_404(Employee, id=employee_id)
-        # Save token
-        employee.token = token
-        employee.save()
+        if token != "null":
+            # Save token
+            employee.token = token
+            employee.save()
         
         # Fetch the last 12 chat messages for this employee
         chat_history = Chat.objects.filter(employee=employee).order_by('-timestamp')[:12]

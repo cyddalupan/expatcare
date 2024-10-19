@@ -63,7 +63,8 @@ INSTALLED_APPS = [
     'chats',
     'fra',
     'statement_of_facts',
-    'support'
+    'support',
+    'reviewhub',
 ]
 
 MIDDLEWARE = [
@@ -240,58 +241,23 @@ JAZZMIN_SETTINGS = {
     "site_brand": "WelfarePH",
     "site_logo": "expatcare/logo.png",
 
+    # Top menu links (no changes here)
     "topmenu_links": [
         {"name": "Dashboard", "url": "admin:index"},
         {"app": "support", "label": "Support"},
     ],
-    "order_with_respect_to": ["support", "cases", "fra", "statement_of_facts", "employee"],
 
-    # "custom_links": {
-    #     "employee": [ 
-    #         {
-    #             "name": "Employees With Complaints",
-    #             "url": "/admin/employee/employeewithcomplaints/",
-    #             "icon": "fas fa-exclamation-triangle", 
-    #             "permissions": ["employee.view_employee"],
-    #         },
-    #         {
-    #             "name": "Employees With Hearings",
-    #             "url": "/admin/employee/employeewithhearings/",
-    #             "icon": "fas fa-gavel", 
-    #             "permissions": ["employee.view_employee"],
-    #         },
-    #         {
-    #             "name": "Employees With No Communication",
-    #             "url": "/admin/employee/employeenocommunication/",
-    #             "icon": "fas fa-bell-slash", 
-    #             "permissions": ["employee.view_employee"],
-    #         },
-    #         {
-    #             "name": "Employees With Closed Cases",
-    #             "url": "/admin/employee/employeeclosedcases/",
-    #             "icon": "fas fa-folder", 
-    #             "permissions": ["employee.view_employee"],
-    #         },
-    #         {
-    #             "name": "Employees Arrived",
-    #             "url": "/admin/employee/employeearrived/",
-    #             "icon": "fas fa-plane-arrival", 
-    #             "permissions": ["employee.view_employee"],
-    #         },
-    #         {
-    #             "name": "Employees Blacklisted",
-    #             "url": "/admin/employee/employeeblacklisted/",
-    #             "icon": "fas fa-ban", 
-    #             "permissions": ["employee.view_employee"],
-    #         }
-    #     ]
-    # },
+    # Order of apps in the sidebar
+    "order_with_respect_to": [
+        "support", "cases", "fra", "reviewhub", "employee"
+    ],
 
+    # Define icons for models
     "icons": {
         "support.chatsupport": "fas fa-comments",
+        "reviewhub.statementoffact": "fas fa-check-circle",  # Add icon for ReviewHub
         "cases.case": "fas fa-briefcase",
         "fra.fra": "fas fa-building",
-        "statement_of_facts.statementoffacts": "fas fa-file-alt",
         "employee.employee": "fas fa-user",
         "employee.employeewithcomplaints": "fas fa-exclamation-triangle",
         "employee.employeewithhearings": "fas fa-gavel",
@@ -300,6 +266,7 @@ JAZZMIN_SETTINGS = {
         "employee.employeearrived": "fas fa-plane-arrival",
         "employee.employeeblacklisted": "fas fa-ban",
     },
+    "hide_apps": ["statement_of_facts"], 
 
     "related_modal_active": True,
 }

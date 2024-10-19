@@ -255,7 +255,7 @@ JAZZMIN_SETTINGS = {
     # Define icons for models
     "icons": {
         "support.chatsupport": "fas fa-comments",
-        "reviewhub.statementoffact": "fas fa-check-circle",  # Add icon for ReviewHub
+        "reviewhub.statementoffact": "fas fa-edit",
         "cases.case": "fas fa-briefcase",
         "fra.fra": "fas fa-building",
         "employee.employee": "fas fa-user",

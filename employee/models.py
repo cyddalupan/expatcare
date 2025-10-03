@@ -14,6 +14,7 @@ class Employee(models.Model):
     email = models.EmailField()
     is_support = models.BooleanField(default=False)
     token = models.CharField(max_length=255)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True, related_name='employee_profile')
     
     date_deployment = models.DateField(null=True, blank=True)  # Date Deployment
     fra = models.ForeignKey(FRA, on_delete=models.SET_NULL, null=True, blank=True)  # Foreign Recruitment Agency
@@ -49,6 +50,18 @@ class Employee(models.Model):
 
     emergency_contact_name = models.CharField(max_length=100)
     emergency_contact_phone = models.CharField(max_length=20)
+    
+    @property
+    def is_authenticated(self):
+        return True
+
+    @property
+    def is_active(self):
+        return True
+
+    @property
+    def is_anonymous(self):
+        return False
     
     def __str__(self):
         return f"{self.first_name} {self.last_name}"

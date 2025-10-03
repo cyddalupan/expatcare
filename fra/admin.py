@@ -24,6 +24,7 @@ class FRAAdmin(admin.ModelAdmin):
             del form.base_fields['agency']
         return form
 
+
     class Meta:
         verbose_name = "FRA's"
         verbose_name_plural = "FRA's"

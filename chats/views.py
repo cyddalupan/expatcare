@@ -1,20 +1,19 @@
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status
+from rest_framework.permissions import IsAuthenticated
 
 from support.models import ChatSupport
 from .models import Chat
 from employee.models import Employee
 from django.shortcuts import get_object_or_404
+from expatcare.authentication import EmployeeTokenAuthentication
 
 class ChatHistoryView(APIView):
-    def get(self, request, employee_id, token):
-        # Fetch the employee based on the provided ID
-        employee = get_object_or_404(Employee, id=employee_id)
-        if token != "null":
-            # Save token
-            employee.token = token
-            employee.save()
+    authentication_classes = [EmployeeTokenAuthentication]
+
+    def get(self, request):
+        employee = request.user
         
         # Fetch the last 12 chat messages for this employee
         chat_history = Chat.objects.filter(employee=employee).order_by('-timestamp')[:12]
@@ -43,14 +42,14 @@ class CheckLastReplyView(APIView):
 
         # Check if there is a support chat and if it's closed
         if last_chat_support and not last_chat_support.is_open:
-            return Response({'response': 'closed'}, status=status.HTTP_200_OK)
+            return Response({'reply': 'closed'}, status=status.HTTP_200_OK)
 
         # Get the latest chat message for this employee
         last_chat = Chat.objects.filter(employee=employee).order_by('-timestamp').first()
 
         # Check if there is a message and if the last sender is support
         if last_chat and last_chat.is_support:
-            return Response({'response': 'reply'}, status=status.HTTP_200_OK)
+            return Response({'reply': 'reply'}, status=status.HTTP_200_OK)
 
         # Otherwise, return false
-        return Response({'response': 'none'}, status=status.HTTP_200_OK)
+        return Response({'reply': 'none'}, status=status.HTTP_200_OK)

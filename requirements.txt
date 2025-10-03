@@ -13,7 +13,8 @@ django-cors-headers==4.4.0
 django-filter==24.2
 django-jazzmin==3.0.0
 djangorestframework==3.15.1
-djangorestframework-simplejwt==5.3.1
+djangorestframework-simplejwt
+
 exceptiongroup==1.2.1
 gunicorn==22.0.0
 h11==0.14.0
@@ -27,7 +28,8 @@ packaging==24.1
 pillow==10.4.0
 pydantic==2.7.4
 pydantic_core==2.18.4
-PyJWT==2.8.0
+PyJWT
+
 python-dotenv==1.0.1
 python-slugify==8.0.4
 requests==2.32.3
@@ -38,12 +40,14 @@ tqdm==4.66.4
 typing_extensions==4.12.2
 urllib3==2.2.2
 zipp==3.19.2
-#pip install django-countries
-django-countries=7.6.1
-#pip install django-admin-rangefilter
-django-admin-rangefilter=0.13.1
-#pip install pandas openpyxl
-#pip install markdown
-#pip install django-crispy-forms
-#pip install crispy-bootstrap4
-#pip install firebase-admin
+django-countries==7.6.1
+django-admin-rangefilter==0.13.1
+pandas==2.3.2
+openpyxl==3.1.5
+django-crispy-forms==2.4
+crispy-bootstrap4==2025.6
+firebase-admin
+django-cors-headers==4.4.0
+mysqlclient==2.2.4
+coverage
+Faker==19.13.0

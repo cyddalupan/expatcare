@@ -38,8 +38,9 @@ def create_statement(employee_id, emotion, consistency_analysis, reference_link)
         )
 
     try:
+        print("PROMPT_EMPLOYEE_UTILS_CREATE_STATEMENT:", messages)
         completion = client.chat.completions.create(
-            model="gpt-4o",
+            model="o4-mini",
             messages=messages,
         )
         return completion.choices[0].message.content
@@ -75,8 +76,9 @@ def build_consistency_analysis(chat_history):
     ]
 
     try:
+        print("PROMPT_EMPLOYEE_UTILS_CONSISTENCY_ANALYSIS:", messages)
         completion = client.chat.completions.create(
-            model="gpt-4o",
+            model="o4-mini",
             messages=messages,
         )
         return completion.choices[0].message.content

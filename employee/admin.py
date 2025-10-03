@@ -178,7 +178,8 @@ class EmployeeAdmin(admin.ModelAdmin):
 
 
     def save_model(self, request, obj, form, change):
-        obj.agency = obj.agency or request.user
+        if not getattr(obj, 'agency_id', None):
+            obj.agency = request.user
         super().save_model(request, obj, form, change)
 
 

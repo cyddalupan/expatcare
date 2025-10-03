@@ -60,8 +60,9 @@ def ai_check_write(article):
     ]
 
     try:
+        print("PROMPT_REVIEWHUB_ADMIN_AI_CHECK_WRITE:", messages)
         completion = client.chat.completions.create(
-            model="gpt-4o",
+            model="o4-mini",
             messages=messages,
             tools=[
                 {

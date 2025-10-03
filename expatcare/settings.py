@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
 import os
+import sys
 from pathlib import Path
 from dotenv import load_dotenv
 import firebase_admin
@@ -120,6 +121,14 @@ if ENVIRONMENT == 'production':
             'PASSWORD': os.getenv('MYSQL_PASSWORD'),
             'HOST': os.getenv('MYSQL_HOST', 'localhost'),
             'PORT': os.getenv('MYSQL_PORT', '3306'),
+            'TEST': {
+                'NAME': os.getenv('TEST_MYSQL_DATABASE_2'),
+                'USER': os.getenv('TEST_MYSQL_USER'),
+                'PASSWORD': os.getenv('TEST_MYSQL_PASSWORD'),
+                'OPTIONS': {
+                    'init_command': 'SET default_storage_engine=InnoDB',
+                },
+            },
         }
     }
 
@@ -195,13 +204,16 @@ REST_FRAMEWORK = {
    #     'rest_framework.authentication.SessionAuthentication',
    #     'rest_framework.authentication.TokenAuthentication',
    # ],
-   # 'DEFAULT_PERMISSION_CLASSES': [
-   #     'rest_framework.permissions.IsAuthenticated',
-    #],
-    'DEFAULT_AUTHENTICATION_CLASSES': [],
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.AllowAny',
     ],
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.TokenAuthentication',
+    ],
+    #'DEFAULT_PERMISSION_CLASSES': [
+    #    'rest_framework.permissions.AllowAny',
+    #],
 }
 
 SITE_ID = 1
@@ -274,7 +286,7 @@ JAZZMIN_SETTINGS = {
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 # Path to your Firebase service account key
-cred = credentials.Certificate("firebase/serviceAccountKey.json")
+# cred = credentials.Certificate("firebase/serviceAccountKey.json")
 
 # Initialize the Firebase Admin SDK
-firebase_admin.initialize_app(cred)
+# firebase_admin.initialize_app(cred)
